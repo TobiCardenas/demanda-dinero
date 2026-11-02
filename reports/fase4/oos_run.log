@@ -1,0 +1,77 @@
+Partes en C:\Users\tobia\.claude\projects\demanda-dinero\data\processed\_parts_20261031T1606: 0 hechas, 67 pendientes
+  [1/67] origen 2021-03: 612 filas, 0 fallas (164s)
+  [2/67] origen 2021-02: 612 filas, 0 fallas (168s)
+  [3/67] origen 2021-12: 612 filas, 0 fallas (170s)
+  [4/67] origen 2021-08: 612 filas, 0 fallas (172s)
+  [5/67] origen 2021-11: 612 filas, 0 fallas (173s)
+  [6/67] origen 2021-07: 612 filas, 0 fallas (181s)
+  [7/67] origen 2021-09: 612 filas, 0 fallas (181s)
+  [8/67] origen 2021-10: 612 filas, 0 fallas (182s)
+  [9/67] origen 2021-05: 612 filas, 0 fallas (203s)
+  [10/67] origen 2021-04: 612 filas, 0 fallas (208s)
+  [11/67] origen 2021-06: 612 filas, 0 fallas (208s)
+  [12/67] origen 2022-01: 612 filas, 0 fallas (299s)
+  [13/67] origen 2022-05: 612 filas, 0 fallas (303s)
+  [14/67] origen 2022-02: 612 filas, 0 fallas (305s)
+  [15/67] origen 2022-03: 612 filas, 0 fallas (309s)
+  [16/67] origen 2022-04: 612 filas, 0 fallas (313s)
+  [17/67] origen 2022-07: 612 filas, 0 fallas (313s)
+  [18/67] origen 2022-06: 612 filas, 0 fallas (315s)
+  [19/67] origen 2022-09: 612 filas, 0 fallas (332s)
+  [20/67] origen 2022-08: 612 filas, 0 fallas (340s)
+  [21/67] origen 2022-10: 612 filas, 0 fallas (359s)
+  [22/67] origen 2022-11: 612 filas, 0 fallas (363s)
+  [23/67] origen 2023-02: 612 filas, 0 fallas (468s)
+  [24/67] origen 2023-04: 612 filas, 0 fallas (481s)
+concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "C:\Users\tobia\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\process.py", line 254, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "C:\Users\tobia\.claude\projects\demanda-dinero\src\evaluate\oos.py", line 129, in _run_and_save
+    res = run_origin(origin_str, seed, grid)
+  File "C:\Users\tobia\.claude\projects\demanda-dinero\src\evaluate\oos.py", line 84, in run_origin
+    od = md.build(origin, panel, rem)
+  File "C:\Users\tobia\.claude\projects\demanda-dinero\src\transform\model_data.py", line 132, in build
+    d[f"y_{short}"] = seasadj_log(np.log(rb).rename(f"y_{short}_{opts['deflator']}"), origin)
+                      ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tobia\.claude\projects\demanda-dinero\src\transform\seasonal.py", line 46, in seasadj_log
+    res = x13_arima_analysis(x, x12path=_x13_path(), log=True, outlier=True)
+  File "C:\Users\tobia\.claude\projects\demanda-dinero\.venv\Lib\site-packages\statsmodels\tsa\x13.py", line 644, in x13_arima_analysis
+    _check_errors(errors, rawspec)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\tobia\.claude\projects\demanda-dinero\.venv\Lib\site-packages\statsmodels\tsa\x13.py", line 223, in _check_errors
+    raise X13Error(errors)
+statsmodels.tools.sm_exceptions.X13Error: ERROR: Number of observations after differencing and/or conditional AR
+        estimation is  23, which is less than the minimum series length
+        required for the model estimated,  26.
+
+  
+         Check automatic modeling options (reduce maxorder for automdl, or
+         check models used with pickmdl) and try again.
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\tobia\.claude\projects\demanda-dinero\src\evaluate\oos.py", line 184, in <module>
+    sys.exit(main(sys.argv[1:]))
+             ~~~~^^^^^^^^^^^^^^
+  File "C:\Users\tobia\.claude\projects\demanda-dinero\src\evaluate\oos.py", line 162, in main
+    o, nr, nf = f.result()
+                ~~~~~~~~^^
+  File "C:\Users\tobia\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tobia\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+statsmodels.tools.sm_exceptions.X13Error: ERROR: Number of observations after differencing and/or conditional AR
+        estimation is  23, which is less than the minimum series length
+        required for the model estimated,  26.
+
+  
+         Check automatic modeling options (reduce maxorder for automdl, or
+         check models used with pickmdl) and try again.
+exit=1

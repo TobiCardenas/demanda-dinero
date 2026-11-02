@@ -1,0 +1,94 @@
+# Decisiones del proyecto. Cambiar acá, nunca en el código.
+
+paths:
+  x13_binary: tools/x13/x13as/x13as.exe   # Census X-13ARIMA-SEATS b62, ascii; instalado 2026-10-30
+  raw: data/raw
+  processed: data/processed
+  forecasts: data/forecasts
+  reports: reports
+
+modeling:
+  unit: components            # components | aggregate (el agregado se corre siempre como benchmark)
+  components: [circ, dav_nr]  # circulante en poder del público, DAV privados no remunerados
+  aggregation: monthly_mean   # monthly_mean | end_of_month
+  deflator: ipc_headline      # ipc_headline | ipc_core
+  opportunity_cost:
+    rate: rate_pf30           # rate_pf30 | rate_tamar | rate_badlar
+    formula: log1p_monthly    # co = ln(1 + i_m), i_m = TNA/100 * 30/365
+  expected_depreciation:
+    source: rem_median        # sin acceso a futuros de A3 (ver series.yaml: no_disponibles)
+  alt:
+    # PENDIENTE DE CONFIRMACIÓN del usuario antes de la Fase 2.
+    numerator: [transf_push_ars_monto, pct_monto]
+    denominator: emae_nominal
+    standardize: true
+
+seasonal:
+  method: x13                 # x13 | stl (stl solo provisorio y queda marcado)
+  pseudo_real_time: true      # X13 sobre la serie truncada en cada origen
+
+forecast:
+  horizons: [1, 2, 3, 4, 5, 6]
+  quantiles: [0.025, 0.16, 0.5, 0.84, 0.975]
+  n_sims: 1000
+  seed: 20261030
+  min_obs_first_origin: 48
+
+# Dummies de quiebre. Cada una con fecha y evento documentado; definidas el 2026-10-30,
+# antes de producir cualquier pronóstico, sin mirar errores de pronóstico.
+# Se listan como candidatas; su inclusión en cada modelo se decide en la Fase 2 y se anota en DECISIONS.md.
+break_dummies:
+  pandemic_aspo:
+    type: impulse_range
+    start: "2020-03"
+    end: "2020-06"
+    event: "ASPO, DNU 297/2020 (20-mar-2020) y prórrogas hasta jun-2020"
+  devaluation_dec23:
+    type: impulse_range
+    start: "2023-12"
+    end: "2024-01"
+    event: "Cambio de gobierno y salto cambiario del 13-dic-2023 (A3500 de ~366 a ~800); IPC +25,5% dic y +20,6% ene"
+  cepo_exit_apr25:
+    type: impulse_range
+    start: "2025-04"
+    end: "2025-04"
+    event: "Salida del cepo para personas humanas y bandas cambiarias, Com. A 8226 (14-abr-2025)"
+
+# Las dummies entran solo en la dinámica de corto plazo (término g*F de la ec. 2), como impulsos.
+# Un escalón en la relación de largo plazo sería la hipótesis de equilibrio desplazado: se prueba
+# como modelo candidato en las fases 3-4, no se impone en la réplica. (Fijado 2026-10-30, antes de
+# producir pronósticos.)
+
+replication:
+  n_sims: 200              # bandas en la réplica (F2 reoptimiza localmente en cada simulación)
+  # Variante de cabecera fijada antes de ver resultados; las demás se reportan todas.
+  headline: {determinants: minimal, sample: from_2017}
+  samples:
+    from_2017: {start: "2017-02"}
+    from_2021: {start: "2021-02"}
+    rolling_60: {window: 60}
+  determinants:
+    minimal: []
+    exp_dep: [dep_exp]
+    alt_linear: [alt]       # solo Familia 1: alt lineal en la relación de largo plazo
+  logistic_grid:
+    theta_quantiles: [0.10, 0.90]
+    n_theta: 17
+    lambda: [0.5, 1, 1.5, 2, 3, 4, 6, 8, 12, 20]
+
+# Fase 5: frescura máxima admitida (meses entre el mes de corrida y el último dato).
+# La corrida falla si alguna serie supera su rezago.
+freshness:
+  money: 1          # agregados del BCRA (promedio mensual completo)
+  ipc_headline: 2
+  emae_orig: 3
+  rate_pf30: 1
+  transf_push_ars_monto: 3
+  rem_survey: 2
+  gdp_quarterly: 3  # en trimestres
+
+monthly:
+  run_day: 18                    # día de la corrida (cron), unos días después de la publicación del IPC
+  alarm_revision_multiple: 2.0   # alarma si |revisión del equilibrio| > 2 x media de desarrollo de la Fase 4
+  history_months: 36             # meses de historia en los gráficos del reporte
+

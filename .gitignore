@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+tools/
+data/processed/
+reports/fase4/pronosticos_con_ensambles.csv

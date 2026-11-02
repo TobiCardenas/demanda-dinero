@@ -1,0 +1,211 @@
+# Catálogo de series. Cada id fue buscado en el catálogo de su fuente; nada se adivinó.
+# verified: fecha en que se confirmó id, descripción y unidad contra el catálogo.
+#
+# Fuentes:
+#   bcra_api   https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/{id}   (catálogo: .../monetarias)
+#   indec_ftp  archivos de https://www.indec.gob.ar/ftp/cuadros/economia/
+#   datos_gob  https://apis.datos.gob.ar/series/api/series/?ids={id}
+#   bcra_xlsx  planillas publicadas por el BCRA (pagos minoristas, REM)
+
+bcra_api:
+  base_url: https://api.bcra.gob.ar/estadisticas/v4.0/monetarias
+  catalog_url: https://api.bcra.gob.ar/estadisticas/v4.0/monetarias?limit=3000
+  start: "2016-01-01"
+  series:
+    # OJO: en Series.xlsm los ids 60-66 son VARIACIONES diarias y 67-73 son SALDOS, con la misma
+    # descripción en el catálogo. Verificado el 2026-10-30: id 67 == id 17 dato a dato; id 60 ~ 1e4 con signo.
+    # El snapshot 2026-10-30 contiene además bcra_circ_public.json / bcra_cheques_canc.json con los ids 60/62
+    # (error de la primera corrida); quedan como evidencia y no se usan.
+    circ_public:
+      id: 67
+      desc: "Billetes y monedas en poder del público, saldo (Series.xlsm)"
+      unit: millones ARS
+      freq: D
+      verified: "2026-10-30"
+    circ_public_pv:
+      id: 17
+      desc: "Billetes y monedas en poder del público (Principales Variables); solo control cruzado de id 67"
+      unit: millones ARS
+      freq: D
+      verified: "2026-10-30"
+    cheques_canc:
+      id: 69
+      desc: "Cheques cancelatorios, saldo (Series.xlsm)"
+      unit: millones ARS
+      freq: D
+      verified: "2026-10-30"
+    m2_trans_priv:
+      id: 197
+      desc: "M2 transaccional del sector privado (Series.xlsm). Existe desde 2021-01-04."
+      unit: millones ARS
+      freq: D
+      verified: "2026-10-30"
+      definition: >-
+        IMM jul-2026, glosario: circulante en poder del público + cheques cancelatorios en pesos
+        + depósitos a la vista no remunerados en pesos del sector privado no financiero.
+    cc_priv:
+      id: 94
+      desc: "Cuentas corrientes del sector privado no financiero (Series.xlsm)"
+      unit: millones ARS
+      freq: D
+      verified: "2026-10-30"
+    ca_priv:
+      id: 95
+      desc: "Cajas de ahorro del sector privado no financiero (Series.xlsm)"
+      unit: millones ARS
+      freq: D
+      verified: "2026-10-30"
+    # Depósitos privados en pesos para el M3 privado (agregado 2026-10-30, hipótesis 6).
+    # OJO: 104 y 106 tienen la misma descripción en el catálogo. Verificado 2026-10-30 con datos del 26-oct:
+    # 94+95+96+97+98 = 122,4 bill. = 106 - 104; 104 (65,8) = depósitos en USD valuados en pesos; 106 = total.
+    pf_priv:
+      id: 96
+      desc: "Depósitos a plazo no ajustables por CER/UVA del sector privado no financiero"
+      unit: millones ARS
+      freq: D
+      verified: "2026-10-30"
+    pf_uva_priv:
+      id: 97
+      desc: "Depósitos a plazo ajustables por CER/UVA del sector privado no financiero"
+      unit: millones ARS
+      freq: D
+      verified: "2026-10-30"
+    other_dep_priv:
+      id: 98
+      desc: "Otros depósitos del sector privado no financiero"
+      unit: millones ARS
+      freq: D
+      verified: "2026-10-30"
+    dep_priv_total_106:
+      id: 106
+      desc: "Depósitos del sector privado no financiero, pesos + dólares valuados en pesos (solo control)"
+      unit: millones ARS
+      freq: D
+      verified: "2026-10-30"
+    dep_priv_usd_104:
+      id: 104
+      desc: "Depósitos del sector privado no financiero en dólares, valuados en pesos (solo control)"
+      unit: millones ARS
+      freq: D
+      verified: "2026-10-30"
+    rate_pf30:
+      id: 12
+      desc: "Tasa de interés de depósitos a 30 días de plazo en entidades financieras"
+      unit: "% TNA"
+      freq: D
+      verified: "2026-10-30"
+    rate_badlar:
+      id: 7
+      desc: "Tasa BADLAR de bancos privados"
+      unit: "% TNA"
+      freq: D
+      verified: "2026-10-30"
+    rate_tamar:
+      id: 44
+      desc: "Tasa TAMAR de bancos privados. Existe desde 2024-10-01."
+      unit: "% TNA"
+      freq: D
+      verified: "2026-10-30"
+    fx_a3500:
+      id: 5
+      desc: "Tipo de cambio mayorista de referencia (Com. A 3500)"
+      unit: ARS por USD
+      freq: D
+      verified: "2026-10-30"
+    infl_bcra:
+      id: 27
+      desc: "Inflación mensual (republicación BCRA del IPC); solo control cruzado"
+      unit: "%"
+      freq: M
+      verified: "2026-10-30"
+
+indec_ftp:
+  ipc_divisiones:
+    url: https://www.indec.gob.ar/ftp/cuadros/economia/serie_ipc_divisiones.csv
+    desc: "IPC base dic-2016 por región y división. Se usa Codigo=0 (NIVEL GENERAL), Region=Nacional."
+    unit: indice dic-2016=100
+    freq: M
+    verified: "2026-10-30"
+  emae:
+    url: https://www.indec.gob.ar/ftp/cuadros/economia/sh_emae_mensual_base2004.xls
+    desc: "EMAE base 2004. Columnas: serie original (col 2) y desestacionalizada (col 4)."
+    unit: indice 2004=100
+    freq: M
+    verified: "2026-10-30"
+
+datos_gob:
+  base_url: https://apis.datos.gob.ar/series/api/series/
+  series:
+    ipc_core:
+      id: 148.3_INUCLEONAL_DICI_M_19
+      desc: "IPC Núcleo Nacional, base dic-2016 (INDEC). INDEC no publica el núcleo en CSV propio; datos.gob.ar va ~1 mes atrasado."
+      unit: indice dic-2016=100
+      freq: M
+      verified: "2026-10-30"
+    ipc_headline_dg:
+      id: 148.3_INIVELNAL_DICI_M_26
+      desc: "IPC Nivel General Nacional (control cruzado del CSV de INDEC)"
+      unit: indice dic-2016=100
+      freq: M
+      verified: "2026-10-30"
+    emae_orig_dg:
+      id: 143.3_NO_PR_2004_A_21
+      desc: "EMAE original (control cruzado del xls de INDEC)"
+      unit: indice 2004=100
+      freq: M
+      verified: "2026-10-30"
+    emae_sa_dg:
+      id: 143.3_NO_PR_2004_A_31
+      desc: "EMAE desestacionalizado (control cruzado del xls de INDEC)"
+      unit: indice 2004=100
+      freq: M
+      verified: "2026-10-30"
+    gdp_nominal_q:
+      id: 9.2_PPC_2004_T_22
+      desc: "PIB a precios corrientes, trimestral, base 2004"
+      unit: millones ARS corrientes
+      freq: Q
+      verified: "2026-10-30"
+    gdp_real_q:
+      id: 4.2_OGP_2004_T_17
+      desc: "PIB a precios de 2004, trimestral, serie original"
+      unit: millones ARS de 2004
+      freq: Q
+      verified: "2026-10-30"
+    gdp_real_sa_q:
+      id: 3.2_OGP_D_2004_T_17
+      desc: >-
+        PIB desestacionalizado a precios de 2004, trimestral. OJO: la API rotula la descripción como
+        "Oferta global total"; la columna del CSV fuente (dataset 3, distribución 3.2) es oferta_global_pib.
+      unit: millones ARS de 2004
+      freq: Q
+      verified: "2026-10-30"
+    gdp_deflator_q:
+      id: 23.2_PIBPM_2004_T_38
+      desc: "Índice de precios implícitos del PIB a precios de mercado, trimestral"
+      unit: indice 2004=100
+      freq: Q
+      verified: "2026-10-30"
+
+bcra_xlsx:
+  pagos_minoristas:
+    # Se publica un archivo por mes; la ingesta prueba desde el mes corriente hacia atrás.
+    url_pattern: https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/Informes/series-informe-mensual-pagos-minoristas-{yyyy}-{mm}.xlsx
+    sheet: "Transferencias de fondos"
+    desc: >-
+      Hoja 'Transferencias de fondos': transferencias inmediatas push en pesos (cols 1-2),
+      push en dólares (3-4), pull (5-6), pagos con transferencia interoperables, PCT/QR (7-8).
+      También se guarda la hoja 'Tarjetas' (débito).
+    unit: cantidad y monto nominal ARS
+    freq: M
+    verified: "2026-10-30"
+  rem_historico:
+    url: https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/relevamiento-expectativas-mercado-historico.xlsx
+    sheet: "Base de Datos Completa"
+    desc: "REM, todos los relevamientos desde jun-2016: fecha de pronóstico, variable, referencia, período, mediana, etc."
+    freq: M
+    verified: "2026-10-30"
+
+no_disponibles:
+  futuros_dolar: "A3 Mercados: sin acceso programático (respuesta del usuario 2026-10-30). Se usa la mediana del REM."
+  caucion: "No está en la API del BCRA (es una tasa de BYMA). No se ingesta; era solo alternativa."

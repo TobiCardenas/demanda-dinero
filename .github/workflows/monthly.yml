@@ -1,0 +1,81 @@
+# Corrida mensual del pipeline de demanda de dinero.
+# Se dispara el día 18 (unos días después de la publicación del IPC de INDEC) y a mano.
+# Si una fuente falla, está atrasada o no valida, el job falla y se abre un issue con el log.
+name: monthly
+
+on:
+  schedule:
+    - cron: "0 12 18 * *"   # 18 de cada mes, 12:00 UTC (09:00 Buenos Aires)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: monthly
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      X13_BINARY: ${{ github.workspace }}/tools/x13/x13as_ascii
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.6"
+
+      - name: Instalar X-13ARIMA-SEATS (Census, b62)
+        run: |
+          mkdir -p tools/x13
+          curl -fsSL -o /tmp/x13.tar.gz \
+            https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/program-archives/x13as_ascii-v1-1-b62.tar.gz
+          tar -xzf /tmp/x13.tar.gz -C tools/x13
+          BIN=$(find tools/x13 -type f -name 'x13as*' -perm -u+x | head -1)
+          test -n "$BIN" || { echo "No se encontró el binario de X13"; exit 1; }
+          [ "$BIN" = "tools/x13/x13as_ascii" ] || cp "$BIN" tools/x13/x13as_ascii
+          chmod +x tools/x13/x13as_ascii
+
+      - name: Dependencias (bloqueadas en uv.lock)
+        run: uv sync --frozen
+
+      - name: Corrida mensual
+        run: uv run python -m src.run_monthly 2>&1 | tee run.log; exit ${PIPESTATUS[0]}
+
+      - name: Tests
+        run: uv run pytest -q
+
+      - name: Guardar snapshot, archivo de pronósticos y reporte
+        run: |
+          git config user.name "monthly-bot"
+          git config user.email "monthly-bot@users.noreply.github.com"
+          git add data/raw data/forecasts reports/*.html
+          git diff --cached --quiet || git commit -m "Corrida mensual $(date -u +%F)"
+          git push
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reporte-${{ github.run_id }}
+          path: |
+            reports/*.html
+            run.log
+
+      - name: Abrir issue si la corrida falló
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "La corrida mensual falló: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo '```'
+            tail -n 60 run.log 2>/dev/null || echo "(sin log)"
+            echo '```'
+          } > body.md
+          gh issue create --title "Corrida mensual fallida $(date -u +%F)" --body-file body.md

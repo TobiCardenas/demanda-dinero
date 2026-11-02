@@ -1,0 +1,49 @@
+[09:58:59] 1/7 Ingesta y snapshot
+Snapshot C:\Users\tobia\.claude\projects\demanda-dinero\data\raw\2026-11-02
+  BCRA circ_public      id=67    n= 2633 último=2026-10-27
+  BCRA circ_public_pv   id=17    n= 2634 último=2026-10-28
+  BCRA cheques_canc     id=69    n= 2633 último=2026-10-27
+  BCRA m2_trans_priv    id=197   n= 1415 último=2026-10-27
+  BCRA cc_priv          id=94    n= 2633 último=2026-10-27
+  BCRA ca_priv          id=95    n= 2633 último=2026-10-27
+  BCRA pf_priv          id=96    n= 2633 último=2026-10-27
+  BCRA pf_uva_priv      id=97    n= 2633 último=2026-10-27
+  BCRA other_dep_priv   id=98    n= 2633 último=2026-10-27
+  BCRA dep_priv_total_106 id=106   n= 2633 último=2026-10-27
+  BCRA dep_priv_usd_104 id=104   n= 2633 último=2026-10-27
+  BCRA rate_pf30        id=12    n= 2635 último=2026-10-29
+  BCRA rate_badlar      id=7     n= 2635 último=2026-10-29
+  BCRA rate_tamar       id=44    n=  502 último=2026-10-29
+  BCRA fx_a3500         id=5     n= 2636 último=2026-10-30
+  BCRA infl_bcra        id=27    n=  129 último=2026-09-30
+  INDEC ipc_divisiones   1242105 bytes
+  INDEC emae               72192 bytes
+  datos.gob.ar ipc_core         último=2026-08-01
+  datos.gob.ar ipc_headline_dg  último=2026-08-01
+  datos.gob.ar emae_orig_dg     último=2026-07-01
+  datos.gob.ar emae_sa_dg       último=2026-07-01
+  datos.gob.ar gdp_nominal_q    último=2026-04-01
+  datos.gob.ar gdp_real_q       último=2026-04-01
+  datos.gob.ar gdp_real_sa_q    último=2026-04-01
+  datos.gob.ar gdp_deflator_q   último=2026-04-01
+  Pagos minoristas: edición 2026-09
+  REM histórico: último relevamiento 2026-09-30
+  Futuros: sin acceso; depreciación esperada desde el REM (decisión registrada).
+[09:59:46] 2/7 Panel y validación
+Panel construido desde C:\Users\tobia\.claude\projects\demanda-dinero\data\raw\2026-11-02
+[09:59:49] 3/7 Frescura de fuentes
+                      serie último dato  rezago  máximo   ok
+              m2_trans_priv     2026-10       1       1 True
+               ipc_headline     2026-09       2       2 True
+                  emae_orig     2026-08       3       3 True
+                  rate_pf30     2026-10       1       1 True
+      transf_push_ars_monto     2026-09       2       3 True
+         REM (relevamiento)     2026-09       2       2 True
+PIB trimestral (trimestres)      2026Q2       2       3 True
+[09:59:49] 4/7 Estimación y pronósticos en el origen 2026-09 (EMAE hasta 2026-08)
+[10:00:26] 5/7 Ensambles
+[10:00:29] 6/7 Archivo
+  630 filas -> realtime_2026-11-02.csv
+[10:00:29] 7/7 Evaluación del archivo y reporte
+Reporte: C:\Users\tobia\.claude\projects\demanda-dinero\reports\2026-11.html (103s)
+exit=0

@@ -1,0 +1,172 @@
+Orígenes 2026
+  2025-11 circ REP_F1  ec0=-0.448 (6s)
+  2025-11 circ REP_F2  ec0=-0.004 (53s)
+  2025-11 circ IC1_F1  ec0=-0.448 (6s)
+  2025-11 circ IC3_F1  ec0=-0.448 (6s)
+  2025-11 circ DIFF    ec0=+nan (4s)
+  2025-11 circ RW      ec0=+nan (0s)
+  2025-11 dav  REP_F1  ec0=-0.240 (5s)
+  2025-11 dav  REP_F2  ec0=+0.201 (64s)
+  2025-11 dav  IC1_F1  ec0=-0.240 (5s)
+  2025-11 dav  IC3_F1  ec0=-0.240 (5s)
+  2025-11 dav  DIFF    ec0=+nan (3s)
+  2025-11 dav  RW      ec0=+nan (0s)
+  2026-04 circ REP_F1  ec0=-0.438 (5s)
+  2026-04 circ REP_F2  ec0=+0.052 (56s)
+  2026-04 circ IC1_F1  ec0=-0.438 (6s)
+  2026-04 circ IC3_F1  ec0=-0.438 (6s)
+  2026-04 circ DIFF    ec0=+nan (4s)
+  2026-04 circ RW      ec0=+nan (0s)
+  2026-04 dav  REP_F1  ec0=+0.047 (4s)
+  2026-04 dav  REP_F2  ec0=+0.245 (58s)
+  2026-04 dav  IC1_F1  ec0=+0.047 (5s)
+  2026-04 dav  IC3_F1  ec0=+0.047 (5s)
+  2026-04 dav  DIFF    ec0=+nan (3s)
+  2026-04 dav  RW      ec0=+nan (0s)
+  2026-07 circ REP_F1  ec0=-0.571 (5s)
+  2026-07 circ REP_F2  ec0=+0.025 (56s)
+  2026-07 circ IC1_F1  ec0=-0.571 (6s)
+  2026-07 circ IC3_F1  ec0=-0.571 (6s)
+  2026-07 circ DIFF    ec0=+nan (3s)
+  2026-07 circ RW      ec0=+nan (0s)
+  2026-07 dav  REP_F1  ec0=-0.302 (4s)
+  2026-07 dav  REP_F2  ec0=-0.046 (55s)
+  2026-07 dav  IC1_F1  ec0=-0.302 (5s)
+  2026-07 dav  IC3_F1  ec0=-0.302 (5s)
+  2026-07 dav  DIFF    ec0=+nan (3s)
+  2026-07 dav  RW      ec0=+nan (0s)
+Equilibrio recursivo
+  recursivo 2024-01
+  recursivo 2024-02
+  recursivo 2024-03
+  recursivo 2024-04
+  recursivo 2024-05
+  recursivo 2024-06
+  recursivo 2024-07
+  recursivo 2024-08
+  recursivo 2024-09
+  recursivo 2024-10
+  recursivo 2024-11
+  recursivo 2024-12
+  recursivo 2025-01
+  recursivo 2025-02
+  recursivo 2025-03
+  recursivo 2025-04
+  recursivo 2025-05
+  recursivo 2025-06
+  recursivo 2025-07
+  recursivo 2025-08
+  recursivo 2025-09
+  recursivo 2025-10
+  recursivo 2025-11
+  recursivo 2025-12
+  recursivo 2026-01
+  recursivo 2026-02
+  recursivo 2026-03
+  recursivo 2026-04
+  recursivo 2026-05
+  recursivo 2026-06
+  recursivo 2026-07
+  recursivo 2026-08
+# Fase 3: tablas
+
+Unidades: % (100 × diferencia de logs de saldos reales s.e.). Horizonte de cada programa: nov-25 → mar-26 (h=4), abr-26 → jul-26 (h=3), jul-26 → ago-26 (h=1; el programa llega a sep-26 pero el EMAE de sep-26 no está publicado).
+
+## 1. Descomposición del error de la réplica (F1 de cabecera), horizonte del programa
+
+| origen | componente | total | escenario | modelo | revisión (objetivo) | revisión (origen) | error del modelo en cambios | ec en el origen |
+|---|---|---|---|---|---|---|---|---|
+| 2025-11 | circ | +12.1 | +0.5 | +11.6 | +1.0 | +0.4 | +11.2 | -44.8 |
+| 2025-11 | dav | +2.6 | +2.7 | -0.1 | +0.1 | +0.2 | -0.3 | -24.0 |
+| 2025-11 | m2_sum | +6.6 | +1.8 | +4.8 | +0.5 | +0.3 | +4.5 | +nan |
+| 2026-04 | circ | +3.8 | -2.0 | +5.8 | -1.0 | -0.4 | +6.3 | -43.8 |
+| 2026-04 | dav | -1.3 | -3.0 | +1.7 | -0.2 | -0.3 | +2.0 | +4.7 |
+| 2026-04 | m2_sum | +0.8 | -2.6 | +3.4 | -0.5 | -0.4 | +3.7 | +nan |
+| 2026-07 | circ | +0.0 | +0.0 | +0.0 | -0.4 | -1.0 | +1.0 | -57.1 |
+| 2026-07 | dav | -0.0 | -0.4 | +0.4 | -0.1 | -0.2 | +0.6 | -30.2 |
+| 2026-07 | m2_sum | +0.0 | -0.2 | +0.3 | -0.2 | -0.5 | +0.8 | +nan |
+
+## 2. Atribución del componente de escenario (F1), horizonte del programa
+
+Cada celda: pronóstico con ese regresor del REM y el resto realizado, menos el pronóstico realizado.
+
+| origen | componente | act | co | alt | suma | escenario total |
+|---|---|---|---|---|---|---|
+| 2025-11 | circ | +0.6 | -0.0 | +0.0 | +0.5 | +0.5 |
+| 2025-11 | dav | +2.6 | +0.1 | +0.0 | +2.7 | +2.7 |
+| 2026-04 | circ | -1.5 | -0.5 | +0.0 | -2.0 | -2.0 |
+| 2026-04 | dav | -2.8 | -0.2 | +0.0 | -3.0 | -3.0 |
+| 2026-07 | circ | -0.1 | +0.1 | +0.0 | +0.0 | +0.0 |
+| 2026-07 | dav | -0.4 | -0.0 | +0.0 | -0.4 | -0.4 |
+
+## 3. Error del modelo en cambios (escenario realizado), horizonte del programa, por modelo
+
+Valor absoluto; menor es mejor. z: error / semiancho de la banda del 68% del mismo modelo.
+
+| origen | componente | REP_F1 | REP_F2 | IC1_F1 | IC3_F1 | DIFF | RW | mejor |
+|---|---|---|---|---|---|---|---|---|
+| 2025-11 | circ | 11.2 | 1.5 | 5.2 | 8.1 | 6.9 | 2.9 | REP_F2 |
+| 2025-11 | dav | 0.3 | 17.5 | 3.5 | 0.2 | 0.6 | 0.6 | IC3_F1 |
+| 2025-11 | m2_sum | 4.5 | 9.3 | 0.2 | 3.3 | 3.2 | 0.8 | IC1_F1 |
+| 2026-04 | circ | 6.3 | 0.9 | 2.8 | 3.1 | 2.0 | 3.3 | REP_F2 |
+| 2026-04 | dav | 2.0 | 1.5 | 2.5 | 1.4 | 1.5 | 0.4 | RW |
+| 2026-04 | m2_sum | 3.7 | 0.5 | 2.6 | 2.1 | 1.7 | 1.1 | REP_F2 |
+| 2026-07 | circ | 1.0 | 0.1 | 0.2 | 0.3 | 0.0 | 0.4 | DIFF |
+| 2026-07 | dav | 0.6 | 0.1 | 0.8 | 0.2 | 0.3 | 0.5 | REP_F2 |
+| 2026-07 | m2_sum | 0.8 | 0.1 | 0.4 | 0.0 | 0.1 | 0.1 | IC3_F1 |
+
+Con escenario ex ante (REM), error total en cambios:
+
+| origen | componente | REP_F1 | REP_F2 | IC1_F1 | IC3_F1 | DIFF | RW | mejor |
+|---|---|---|---|---|---|---|---|---|
+| 2025-11 | circ | 11.7 | 3.7 | 5.7 | 8.6 | 7.6 | 2.9 | RW |
+| 2025-11 | dav | 2.4 | 6.4 | 0.8 | 2.5 | 1.3 | 0.6 | RW |
+| 2025-11 | m2_sum | 6.3 | 2.1 | 1.9 | 5.0 | 3.9 | 0.8 | RW |
+| 2026-04 | circ | 4.3 | 1.0 | 0.8 | 1.1 | 0.2 | 3.3 | DIFF |
+| 2026-04 | dav | 1.0 | 3.5 | 0.5 | 1.6 | 0.3 | 0.4 | DIFF |
+| 2026-04 | m2_sum | 1.2 | 2.5 | 0.0 | 0.5 | 0.2 | 1.1 | IC1_F1 |
+| 2026-07 | circ | 1.1 | 0.2 | 0.2 | 0.3 | 0.1 | 0.4 | DIFF |
+| 2026-07 | dav | 0.2 | 0.3 | 1.2 | 0.6 | 0.4 | 0.5 | REP_F1 |
+| 2026-07 | m2_sum | 0.5 | 0.1 | 0.7 | 0.2 | 0.2 | 0.1 | REP_F2 |
+
+z de la réplica F1 (escenario realizado): 2025-11/circ -2.04, 2025-11/dav +0.06, 2026-04/circ -1.29, 2026-04/dav -0.50, 2026-07/circ -0.54, 2026-07/dav -0.26
+
+## 4. Equilibrio estimado en tiempo pseudo-real (F1, reestimada cada mes)
+
+| origen | componente | y | y_lp | ec (%) | y_lp de nov-25 según ese origen | theta | a1 (co) | a2 (act) |
+|---|---|---|---|---|---|---|---|---|
+| 2024-06 | circ | 11.976 | 12.874 | -89.8 | nan | -0.045 | -19.3 | +0.37 |
+| 2024-06 | dav | 12.631 | 13.111 | -48.0 | nan | -0.196 | -6.7 | -0.18 |
+| 2024-12 | circ | 12.235 | 12.839 | -60.4 | nan | -0.033 | -23.3 | -0.32 |
+| 2024-12 | dav | 12.674 | 12.847 | -17.3 | nan | -0.031 | -14.8 | -10.05 |
+| 2025-06 | circ | 12.335 | 12.759 | -42.3 | nan | -0.024 | -24.8 | -1.31 |
+| 2025-06 | dav | 12.726 | 12.757 | -3.1 | nan | -0.033 | -11.6 | -9.88 |
+| 2025-11 | circ | 12.323 | 12.771 | -44.8 | 12.771 | -0.023 | -25.4 | -1.44 |
+| 2025-11 | dav | 12.659 | 12.899 | -24.0 | 12.899 | -0.033 | -11.9 | -10.99 |
+| 2026-01 | circ | 12.308 | 12.726 | -41.8 | 12.735 | -0.022 | -25.8 | -1.98 |
+| 2026-01 | dav | 12.661 | 12.593 | +6.8 | 12.896 | -0.033 | -13.3 | -10.64 |
+| 2026-04 | circ | 12.269 | 12.707 | -43.8 | 12.652 | -0.019 | -24.2 | -3.12 |
+| 2026-04 | dav | 12.644 | 12.597 | +4.7 | 12.890 | -0.037 | -12.9 | -9.39 |
+| 2026-07 | circ | 12.231 | 12.802 | -57.1 | 12.593 | -0.015 | -25.1 | -4.03 |
+| 2026-07 | dav | 12.650 | 12.952 | -30.2 | 12.875 | -0.046 | -12.6 | -9.01 |
+| 2026-08 | circ | 12.234 | 12.773 | -54.0 | 12.531 | -0.009 | -25.6 | -5.36 |
+| 2026-08 | dav | 12.655 | 12.992 | -33.7 | 12.834 | -0.034 | -11.6 | -10.70 |
+
+## 5. F2 logística en los orígenes de 2026
+
+| origen | componente | theta_alt | lambda | w en el origen | borde de grilla | rango perfil theta |
+|---|---|---|---|---|---|---|
+| 2025-11 | circ | 1.55 | 2.37 | 0.54 | sí | 0.044 |
+| 2025-11 | dav | 1.55 | 14.33 | 0.70 | sí | 0.018 |
+| 2026-04 | circ | 1.52 | 2.73 | 0.51 | sí | 0.088 |
+| 2026-04 | dav | 1.27 | 50.00 | 0.00 | sí | 0.036 |
+| 2026-07 | circ | 1.46 | 3.01 | 0.51 | sí | 0.107 |
+| 2026-07 | dav | 0.96 | 50.00 | 0.00 | sí | 0.004 |
+
+Supuestos del escenario REM por origen:
+
+- 2025-11: IPC REM sin dato para ['2026-06', '2026-07', '2026-08']: se repite 1.50%; co: rate_pf30 = REM Tasa de interés (TAMAR) x (rate_pf30 / rate_tamar en el origen = 0.928); PIB REM sin trimestre para ['2026-04', '2026-05', '2026-06', '2026-07', '2026-08']: se repite 0.87% t/t; alt: sin pronóstico REM; se extrapola el cambio medio de 12 meses (+0.0086 log/mes); dep_exp: REM sin TC para ['2026-05', '2026-06', '2026-07', '2026-08']; se repite el último
+- 2026-04: co: rate_pf30 = REM Tasa de interés (TAMAR) x (rate_pf30 / rate_tamar en el origen = 0.938); alt: sin pronóstico REM; se extrapola el cambio medio de 12 meses (+0.0102 log/mes)
+- 2026-07: co: rate_pf30 = REM Tasa de interés (TAMAR) x (rate_pf30 / rate_tamar en el origen = 0.900); alt: sin pronóstico REM; se extrapola el cambio medio de 12 meses (+0.0082 log/mes)
+
+exit=0

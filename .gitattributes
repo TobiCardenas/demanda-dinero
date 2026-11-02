@@ -1,0 +1,3 @@
+# Snapshots y archivo de pronósticos: bytes exactos (los sha256 del manifest deben coincidir en cualquier SO)
+data/raw/** -text
+data/forecasts/** -text

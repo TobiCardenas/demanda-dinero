@@ -1,0 +1,93 @@
+(a) Gráfico 1
+  F1_vecm|minimal|from_2017                n= 92 p=1 theta=-0.033 ec0=-0.604 (3s)
+  F2_logistic|minimal|from_2017            n= 91 p=1 theta=-0.041 ec0=-0.532 (37s)
+  F1_vecm|exp_dep|from_2017                n= 92 p=1 theta=-0.001 ec0=-1.700 (3s)
+  F2_logistic|exp_dep|from_2017            n= 91 p=1 theta=-0.040 ec0=-0.525 (39s)
+  F1_vecm|alt_linear|from_2017             n= 91 p=1 theta=-0.010 ec0=-0.402 (3s)
+  F1_vecm|minimal|from_2021                n= 47 p=2 theta=-0.008 ec0=-0.608 (2s)
+  F2_logistic|minimal|from_2021            n= 47 p=2 theta=-0.100 ec0=+0.089 (26s)
+  F1_vecm|exp_dep|from_2021                n= 47 p=2 theta=-0.014 ec0=-0.439 (3s)
+  F2_logistic|exp_dep|from_2021            n= 47 p=2 theta=-0.034 ec0=+0.063 (30s)
+  F1_vecm|alt_linear|from_2021             n= 47 p=2 theta=-0.059 ec0=+0.060 (3s)
+  F1_vecm|minimal|rolling_60               n= 60 p=1 theta=-0.031 ec0=-0.663 (2s)
+  F2_logistic|minimal|rolling_60           n= 60 p=1 theta=-0.055 ec0=-0.357 (36s)
+  F1_vecm|exp_dep|rolling_60               n= 60 p=1 theta=+0.001 ec0=-0.105 (3s)
+  F2_logistic|exp_dep|rolling_60           n= 60 p=1 theta=-0.031 ec0=-0.118 (31s)
+  F1_vecm|alt_linear|rolling_60            n= 60 p=1 theta=-0.020 ec0=-0.150 (3s)
+(b) Programa dic-2025
+ componente circ
+  F1_vecm|minimal|from_2017                n=103 p=1 theta=-0.023 ec0=-0.448 (3s)
+  F2_logistic|minimal|from_2017            n=102 p=1 theta=-0.067 ec0=-0.004 (30s)
+  F1_vecm|exp_dep|from_2017                n=103 p=1 theta=+0.001 ec0=-1.043 (3s)
+  F2_logistic|exp_dep|from_2017            n=102 p=1 theta=-0.065 ec0=+0.012 (36s)
+  F1_vecm|alt_linear|from_2017             n=102 p=1 theta=-0.005 ec0=-0.073 (3s)
+  F1_vecm|minimal|from_2021                n= 58 p=1 theta=-0.003 ec0=-0.225 (2s)
+  F2_logistic|minimal|from_2021            n= 58 p=1 theta=-0.090 ec0=+0.001 (38s)
+  F1_vecm|exp_dep|from_2021                n= 58 p=1 theta=+0.001 ec0=-2.200 (3s)
+  F2_logistic|exp_dep|from_2021            n= 58 p=1 theta=-0.080 ec0=+0.047 (42s)
+  F1_vecm|alt_linear|from_2021             n= 58 p=1 theta=-0.027 ec0=+0.022 (2s)
+  F1_vecm|minimal|rolling_60               n= 60 p=1 theta=-0.000 ec0=-0.300 (2s)
+  F2_logistic|minimal|rolling_60           n= 60 p=1 theta=-0.091 ec0=+0.002 (46s)
+  F1_vecm|exp_dep|rolling_60               n= 60 p=1 theta=+0.001 ec0=-2.234 (3s)
+  F2_logistic|exp_dep|rolling_60           n= 60 p=1 theta=-0.079 ec0=+0.044 (49s)
+  F1_vecm|alt_linear|rolling_60            n= 60 p=1 theta=-0.024 ec0=+0.025 (3s)
+ componente dav
+  F1_vecm|minimal|from_2021                n= 54 p=1 theta=-0.033 ec0=-0.240 (2s)
+  F2_logistic|minimal|from_2021            n= 54 p=1 theta=-0.045 ec0=+0.201 (34s)
+  F1_vecm|exp_dep|from_2021                n= 54 p=1 theta=+0.001 ec0=+1.984 (3s)
+  F2_logistic|exp_dep|from_2021            n= 54 p=1 theta=-0.047 ec0=+0.163 (36s)
+  F1_vecm|alt_linear|from_2021             n= 54 p=1 theta=-0.030 ec0=+0.026 (3s)
+  F1_vecm|minimal|rolling_60               n= 54 p=1 theta=-0.033 ec0=-0.240 (3s)
+  F2_logistic|minimal|rolling_60           n= 54 p=1 theta=-0.045 ec0=+0.201 (34s)
+  F1_vecm|exp_dep|rolling_60               n= 54 p=1 theta=+0.001 ec0=+1.984 (3s)
+  F2_logistic|exp_dep|rolling_60           n= 54 p=1 theta=-0.047 ec0=+0.163 (34s)
+  F1_vecm|alt_linear|rolling_60            n= 54 p=1 theta=-0.030 ec0=+0.026 (2s)
+ componente m2
+  F1_vecm|minimal|from_2021                n= 54 p=1 theta=-0.024 ec0=-0.237 (3s)
+  F2_logistic|minimal|from_2021            n= 54 p=1 theta=-0.118 ec0=+0.003 (36s)
+  F1_vecm|exp_dep|from_2021                n= 54 p=1 theta=-0.000 ec0=-4.203 (2s)
+  F2_logistic|exp_dep|from_2021            n= 54 p=1 theta=-0.115 ec0=+0.013 (31s)
+  F1_vecm|alt_linear|from_2021             n= 54 p=1 theta=-0.028 ec0=+0.034 (2s)
+  F1_vecm|minimal|rolling_60               n= 54 p=1 theta=-0.024 ec0=-0.237 (2s)
+  F2_logistic|minimal|rolling_60           n= 54 p=1 theta=-0.118 ec0=+0.003 (37s)
+  F1_vecm|exp_dep|rolling_60               n= 54 p=1 theta=-0.000 ec0=-4.203 (2s)
+  F2_logistic|exp_dep|rolling_60           n= 54 p=1 theta=-0.115 ec0=+0.013 (30s)
+  F1_vecm|alt_linear|rolling_60            n= 54 p=1 theta=-0.028 ec0=+0.034 (2s)
+# Fase 2: réplica
+
+Desestacionalización: x13 (pseudo tiempo real, truncada en cada origen). Cabecera: determinantes mínimos, muestra desde 2017 (DAV: desde 2021).
+
+## (a) Gráfico 1: circulante real s.e. a dic-2025 (miles de millones de $ de dic-2016)
+
+| | F1 lineal | F2 no lineal | Observado | Brecha (F1−F2)/obs |
+|---|---|---|---|---|
+| BCRA (lectura a ojo, $ de 2016) | 275 | 226 | 228 | 21.5% |
+| Réplica, cabecera | 276.9 | 279.6 | 223.5 | -1.2% |
+| Réplica, promedio de variantes | 239.9 | 238.7 | 223.5 | 0.5% |
+
+- ¿F2 más cerca del observado? Cabecera: no; promedio de variantes: sí.
+- **Criterio (a): NO CUMPLE** (F2 más cerca y brecha entre 10% y 40%).
+
+## (b) Programa dic-2025: M2 transaccional, cambio en pp del PIB respecto de nov-25
+
+Nivel en el origen: réplica 5.60% contra BCRA 5,80%.
+
+|                                           |   2025-12 |   2026-01 |   2026-02 |   2026-03 |
+|:------------------------------------------|----------:|----------:|----------:|----------:|
+| F1_vecm componentes (cabecera)            |     0.064 |     0.13  |     0.193 |     0.249 |
+| F1_vecm agregado (cabecera)               |     0.004 |     0.03  |     0.058 |     0.078 |
+| F1_vecm componentes (prom. variantes)     |     0.05  |     0.079 |     0.1   |     0.11  |
+| F2_logistic componentes (cabecera)        |    -0.029 |    -0.078 |    -0.142 |    -0.223 |
+| F2_logistic agregado (cabecera)           |    -0.054 |    -0.074 |    -0.082 |    -0.088 |
+| F2_logistic componentes (prom. variantes) |    -0.032 |    -0.084 |    -0.148 |    -0.225 |
+
+BCRA base: dic-25 +0.03, mar-26 +0.23.
+
+- **Criterio (b): CUMPLE** (suba dic→mar: sí; mar-26 a ±0,1 pp del BCRA: sí; réplica F1 +0.249 contra BCRA +0.23).
+
+Supuestos del escenario REM:
+
+- co: rate_pf30 = REM Tasa de interés (TAMAR) x (rate_pf30 / rate_tamar en el origen = 0.928)
+- alt: sin pronóstico REM; se extrapola el cambio medio de 12 meses (+0.0086 log/mes)
+
+exit=0
