@@ -10,6 +10,8 @@ make monthly   # o: uv run python -m src.run_monthly
 
 Ejecuta ingesta → snapshot → panel y validación → control de frescura → estimación en el origen de tiempo real → pronósticos (ex ante REM y realizado) → ensambles → archivo → evaluación de todo el archivo → `reports/<YYYY-MM>.html`. Si una fuente falla, no valida o está atrasada más de lo admitido (`settings.yaml: freshness`), la corrida termina con código 1. El workflow `.github/workflows/monthly.yml` la corre el día 18 de cada mes, guarda snapshot, pronósticos y reporte en el repo y abre un issue si falla.
 
+**Ver los reportes:** https://tobicardenas.github.io/demanda-dinero/ (índice con el último arriba; lo publica `.github/workflows/pages.yml`). Cada mes, después de publicar, el workflow abre un issue "Reporte de demanda de dinero AAAA-MM disponible" con el resumen (`reports/AAAA-MM_resumen.md`) y el enlace; GitHub lo avisa por email.
+
 ## Uso por fase
 
 ```bash

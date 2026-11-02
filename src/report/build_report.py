@@ -224,6 +224,34 @@ def aggregates_table(ctx: dict) -> str:
     return _table(t) + note
 
 
+PAGES_URL = "https://tobicardenas.github.io/demanda-dinero"
+
+
+def write_summary(run_month: str, ctx: dict, tabs: dict, al: pd.DataFrame, flags: list[str]) -> None:
+    """reports/<AAAA-MM>_resumen.md: cuerpo del aviso mensual (issue de GitHub -> email)."""
+    import re as _re
+
+    L = [f"Reporte de demanda de dinero **{run_month}**: {PAGES_URL}/{run_month}.html", "",
+         f"Origen {ctx['origin']} (snapshot {ctx['snapshot']}). Pronóstico ex ante con el escenario REM, en términos "
+         "reales y sin estacionalidad.", ""]
+    for var, t in tabs.items():
+        last = t.iloc[-1]
+        L.append(f"- **{VAR_LABEL[var]}**: {last['var. vs origen (%)']:+.1f}% a {t.index[-1]} (mediana; banda 68% "
+                 f"{100 * (last['68% inf.'] / last['RW'] - 1):+.1f}% a {100 * (last['68% sup.'] / last['RW'] - 1):+.1f}%). "
+                 "Caminata aleatoria: sin cambio.")
+    L.append("")
+    if al["alarma"].any():
+        L.append("⚠️ **Alarma de inestabilidad del equilibrio** en: "
+                 + ", ".join(VAR_LABEL.get(v, v) for v in al.loc[al["alarma"], "variable"])
+                 + ". Usar la caminata aleatoria como referencia.")
+    else:
+        L.append("Sin alarmas de inestabilidad del equilibrio.")
+    clean = [_re.sub("<[^>]+>", "", f) for f in flags if not f.startswith("AVISO")]
+    if clean:
+        L += ["", "Notas:"] + [f"- {f}" for f in clean]
+    (ROOT / "reports" / f"{run_month}_resumen.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+
+
 def build(snapshot: str) -> str:
     ctx, arch = load(snapshot)
     months = load_yaml("settings.yaml")["monthly"]["history_months"]
@@ -261,10 +289,13 @@ def build(snapshot: str) -> str:
                  "simple de los 3 mejores de los últimos 12 meses). La caminata aleatoria (RW) se publica siempre al "
                  "lado: en 2026 ningún modelo le ganó de forma sistemática (Fase 4). Bandas solo con shocks: son "
                  "angostas, la cobertura efectiva es menor que la nominal.</p>")
+    tabs = {}
     for var in MAIN_VARS:
         if (cur["variable"] == var).any():
             img, tab = fan_chart(var, ctx, cur, months)
+            tabs[var] = tab
             parts += [f"<h3>{VAR_LABEL[var]}</h3>", img, _table(tab, 2)]
+    write_summary(run_month, ctx, tabs, al, flags)
 
     parts.append("<h2>2. Brecha al equilibrio y alarma</h2><p class='muted'>ec = y − y_lp del modelo lineal (F1 mínima). "
                  "Negativa: el modelo cree que la demanda está por debajo de su equilibrio y proyecta suba. La alarma "

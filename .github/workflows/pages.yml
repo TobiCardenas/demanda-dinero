@@ -1,0 +1,49 @@
+# Publica los reportes mensuales en GitHub Pages: https://tobicardenas.github.io/demanda-dinero/
+# Corre cuando cambia un reporte en main, a mano, o llamado por el workflow mensual
+# (los commits hechos con GITHUB_TOKEN no disparan otros workflows por push).
+name: pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["reports/*.html", "src/report/site.py"]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main   # incluye el commit del reporte recién hecho por el workflow mensual
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.6"
+
+      - name: Armar el sitio
+        run: |
+          uv sync --frozen
+          uv run python -m src.report.site _site
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

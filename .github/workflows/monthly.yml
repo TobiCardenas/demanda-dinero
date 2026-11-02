@@ -54,7 +54,7 @@ jobs:
         run: |
           git config user.name "monthly-bot"
           git config user.email "monthly-bot@users.noreply.github.com"
-          git add data/raw data/forecasts reports/*.html
+          git add data/raw data/forecasts reports/*.html reports/*_resumen.md
           git diff --cached --quiet || git commit -m "Corrida mensual $(date -u +%F)"
           git push
 
@@ -79,3 +79,32 @@ jobs:
             echo '```'
           } > body.md
           gh issue create --title "Corrida mensual fallida $(date -u +%F)" --body-file body.md
+
+  pages:
+    needs: run
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml
+
+  notify:
+    needs: [run, pages]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Aviso mensual (issue -> email)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          MONTH=$(date -u +%Y-%m)
+          RES="reports/${MONTH}_resumen.md"
+          test -f "$RES" || { echo "No está $RES"; exit 1; }
+          { echo "@${{ github.repository_owner }}"; echo; cat "$RES"; } > body.md
+          gh issue create --title "Reporte de demanda de dinero ${MONTH} disponible" --body-file body.md
