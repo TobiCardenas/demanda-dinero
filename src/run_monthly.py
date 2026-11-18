@@ -15,9 +15,11 @@ import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
     os.environ.setdefault(_v, "1")
 
+import datetime as dt
 import pickle
 import sys
 import time
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -89,15 +91,45 @@ def alarms(stab_all: pd.DataFrame, current: pd.DataFrame, multiple: float) -> pd
     return pd.DataFrame(rows)
 
 
+RUNS_DIR = ROOT / "data" / "runs"
+
+
+def save_run(date: str, context: dict, stab: list[dict]) -> Path:
+    """data/runs/<fecha>/: lo necesario para rehacer el reporte y compararlo con la corrida siguiente.
+    contexto.pkl (entrada del reporte), observado.csv (series s.e. tal como se vieron en esta corrida) y
+    modelo.csv (parámetros de la F1 mínima por variable). Se versiona en el repo."""
+    d = RUNS_DIR / date
+    d.mkdir(parents=True, exist_ok=True)
+    with open(d / "contexto.pkl", "wb") as fh:
+        pickle.dump(context, fh)
+    od = context["od_data"]
+    cols = [c for c in od.columns if c.startswith("y_")] + ["act", "co", "alt", "act_filled", "alt_filled"]
+    od.reindex(columns=cols).rename_axis("period").to_csv(d / "observado.csv")
+    pd.DataFrame(stab).to_csv(d / "modelo.csv", index=False)
+    return d
+
+
 def main(argv: list[str]) -> int:
+    """Sin argumentos: corrida mensual completa.
+    --rebuild AAAA-MM-DD: reconstruye data/runs/<fecha>/ de una corrida ya archivada, sin bajar datos ni escribir
+    pronósticos, y verifica que los pronósticos reconstruidos coincidan con los archivados."""
     t0 = time.time()
     cfg = load_yaml("settings.yaml")
     seed, grid = cfg["forecast"]["seed"], cfg["replication"]["logistic_grid"]
+    rebuild = argv[argv.index("--rebuild") + 1] if "--rebuild" in argv else None
 
-    step("1/7 Ingesta y snapshot")
-    if ingest_run.main([]) != 0:
-        raise RunError("La ingesta falló (ver arriba). No se continúa con datos viejos.")
-    snap = latest_snapshot()
+    if rebuild:
+        from src.ingest.common import Snapshot
+
+        step(f"Reconstrucción de la corrida {rebuild} (sin ingesta)")
+        snap = Snapshot(dt.date.fromisoformat(rebuild))
+        if not snap.is_complete():
+            raise RunError(f"No existe el snapshot completo {snap.dir}")
+    else:
+        step("1/7 Ingesta y snapshot")
+        if ingest_run.main([]) != 0:
+            raise RunError("La ingesta falló (ver arriba). No se continúa con datos viejos.")
+        snap = latest_snapshot()
 
     step("2/7 Panel y validación")
     panel_mod.main([snap.date.isoformat()])
@@ -115,9 +147,11 @@ def main(argv: list[str]) -> int:
     origin = min(panel["m2_trans_priv"].dropna().index.max(), panel["ipc_headline"].dropna().index.max())
     last_emae = panel["emae_orig"].dropna().index.max()
     out_csv = FC_DIR / f"realtime_{snap.date.isoformat()}.csv"
-    if out_csv.exists():
+    if out_csv.exists() and not rebuild:
         raise RunError(f"Ya existe {out_csv.name}: el archivo de pronósticos no se reescribe. "
                        "Para regenerar solo el reporte: python -m src.report.build_report")
+    if rebuild and not out_csv.exists():
+        raise RunError(f"No hay pronósticos archivados para {rebuild}")
 
     step(f"4/7 Estimación y pronósticos en el origen {origin} (EMAE hasta {last_emae})")
     ctx: dict = {}
@@ -131,6 +165,10 @@ def main(argv: list[str]) -> int:
     fc_now.insert(1, "realtime", "true")
     filled = [str(m) for m in od.data.index[od.data.get("act_filled", pd.Series(False, index=od.data.index)).astype(bool)]]
     fc_now["act_filled_months"] = ",".join(filled)
+
+    if rebuild:
+        return finish_rebuild(snap, fc_now, out_csv, stab, ctx, od, fresh, rep, filled, fails, cfg, origin,
+                              last_emae, t0)
 
     step("5/7 Ensambles")
     vfile = ROOT / "data" / "processed" / "pseudo_vintages.csv"
@@ -176,18 +214,43 @@ def main(argv: list[str]) -> int:
     step("7/7 Evaluación del archivo y reporte")
     stab_all = load_stability()
     alarm = alarms(stab_all, pd.DataFrame(stab), cfg["monthly"]["alarm_revision_multiple"])
-    context = {"snapshot": snap.date.isoformat(), "origin": origin, "last_emae": last_emae, "filled": filled,
+    return finish(snap, ctx, od, fresh, rep, filled, fails, alarm, stab, origin, last_emae, t0)
+
+
+def finish(snap, ctx, od, fresh, rep, filled, fails, alarm, stab, origin, last_emae, t0) -> int:
+    from src.transform.seasonal import method as sa_method
+
+    date = snap.date.isoformat()
+    context = {"snapshot": date, "origin": origin, "last_emae": last_emae, "filled": filled,
                "freshness": fresh, "validation_warnings": rep.warnings, "alarms": alarm,
-               "ec": ctx["ec"], "gdp": ctx["gdp"], "od_data": od.data, "fails": fails,
-               "seasonal_method": __import__("src.transform.seasonal", fromlist=["method"]).method()}
-    ctx_path = ROOT / "data" / "processed" / f"monthly_context_{snap.date.isoformat()}.pkl"
-    with open(ctx_path, "wb") as fh:
-        pickle.dump(context, fh)
+               "ec": ctx["ec"], "ylp": ctx["ylp"], "gdp": ctx["gdp"], "od_data": od.data, "fails": fails,
+               "seasonal_method": sa_method()}
+    print(f"  corrida guardada en {save_run(date, context, stab)}")
     from src.report import build_report
 
-    path = build_report.build(snap.date.isoformat())
+    path = build_report.build(date)
     print(f"Reporte: {path} ({time.time() - t0:.0f}s)")
     return 0
+
+
+def finish_rebuild(snap, fc_now, out_csv, stab, ctx, od, fresh, rep, filled, fails, cfg, origin, last_emae,
+                   t0) -> int:
+    """Rebuild: no se escribe nada en data/forecasts; solo se verifica y se guarda data/runs/<fecha>/."""
+    arch = pd.read_csv(out_csv)
+    arch = arch[~arch["model"].str.startswith("ENS_")]
+    key = ["model", "variable", "scenario", "h"]
+    cmp = fc_now.merge(arch, on=key, suffixes=("", "_arch"))
+    cmp["d"] = (cmp["point"] - cmp["point_arch"]).abs()
+    diff = cmp["d"].max() if len(cmp) else np.inf
+    print(f"  verificación contra el archivo: {len(cmp)} de {len(arch)} pronósticos, máx. dif. {diff:.2e}")
+    if not len(cmp) or diff > 1e-6:
+        # Puede pasar si la corrida original fue en otro sistema operativo (p. ej. Linux en GitHub Actions):
+        # optimizadores numéricos como el del ARIMA pueden elegir distinto por diferencias mínimas.
+        worst = cmp.groupby(["variable", "model"])["d"].max().sort_values(ascending=False).head(3)
+        print("  AVISO: la reconstrucción no coincide exactamente con lo archivado. Mayores diferencias: "
+              + "; ".join(f"{v}/{m} {x:.1e}" for (v, m), x in worst.items()))
+    alarm = alarms(load_stability(), pd.DataFrame(stab), cfg["monthly"]["alarm_revision_multiple"])
+    return finish(snap, ctx, od, fresh, rep, filled, fails, alarm, stab, origin, last_emae, t0)
 
 
 if __name__ == "__main__":

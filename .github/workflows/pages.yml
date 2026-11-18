@@ -6,7 +6,7 @@ name: pages
 on:
   push:
     branches: [main]
-    paths: ["reports/*.html", "src/report/site.py"]
+    paths: ["reports/*.html", "reports/corridas/*.html", "src/report/site.py"]
   workflow_dispatch:
   workflow_call:
 

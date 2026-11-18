@@ -12,6 +12,8 @@ Ejecuta ingesta → snapshot → panel y validación → control de frescura →
 
 **Ver los reportes:** https://tobicardenas.github.io/demanda-dinero/ (índice con el último arriba; lo publica `.github/workflows/pages.yml`). Cada mes, después de publicar, el workflow abre un issue "Reporte de demanda de dinero AAAA-MM disponible" con el resumen (`reports/AAAA-MM_resumen.md`) y el enlace; GitHub lo avisa por email.
 
+Cada reporte compara con la corrida anterior (`data/runs/<fecha>/`), trae explicaciones en lenguaje simple para cada gráfico y un semáforo de desempeño que indica si el modelo principal viene errando más que "igual que hoy". Todas las corridas quedan en `reports/corridas/`. Para rehacer los archivos de una corrida ya archivada: `python -m src.run_monthly --rebuild AAAA-MM-DD`.
+
 ## Uso por fase
 
 ```bash

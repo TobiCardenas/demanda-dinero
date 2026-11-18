@@ -1,3 +1,5 @@
 # Snapshots y archivo de pronósticos: bytes exactos (los sha256 del manifest deben coincidir en cualquier SO)
 data/raw/** -text
 data/forecasts/** -text
+# Contexto de cada corrida (pickle de pandas): se lee con las versiones de uv.lock
+data/runs/**/*.pkl -text

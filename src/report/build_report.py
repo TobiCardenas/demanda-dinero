@@ -1,6 +1,6 @@
 """Reporte HTML mensual: python -m src.report.build_report [YYYY-MM-DD del snapshot]
 
-Lee el contexto guardado por src.run_monthly (data/processed/monthly_context_<fecha>.pkl) y todo el archivo de
+Lee el contexto guardado por src.run_monthly (data/runs/<fecha>/contexto.pkl) y todo el archivo de
 pronósticos; no reestima nada. Escribe reports/<YYYY-MM>.html, autocontenido (gráficos embebidos).
 """
 
@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 
 from src.evaluate.errors import attach_observed, point_metrics
+from src.report import sections as S
 from src.ingest.common import ROOT, load_yaml
 from src.transform.ratios import monthly_nominal_gdp_sa
 
@@ -44,6 +45,9 @@ table{border-collapse:collapse;font-size:.85rem;margin:8px 0;width:100%;display:
 th,td{border-bottom:1px solid var(--line);padding:4px 8px;text-align:right;white-space:nowrap}th{color:var(--muted);font-weight:600}
 td:first-child,th:first-child{text-align:left}img{max-width:100%;height:auto;background:#fff;border-radius:6px}
 ul{padding-left:1.2em}
+details.explain{background:var(--card);border-left:3px solid var(--accent);border-radius:6px;padding:8px 14px;margin:10px 0}
+details.explain summary{cursor:pointer;font-weight:600;color:var(--accent)}
+details.explain p{margin:.5em 0}.criollo{border-top:1px dashed var(--line);padding-top:.5em}
 """
 
 
@@ -59,7 +63,10 @@ def _table(df: pd.DataFrame, nd: int = 2, index: bool = True) -> str:
 
 
 def load(snapshot: str):
-    with open(ROOT / "data" / "processed" / f"monthly_context_{snapshot}.pkl", "rb") as fh:
+    path = ROOT / "data" / "runs" / snapshot / "contexto.pkl"
+    if not path.exists():
+        raise FileNotFoundError(f"No está {path}. Reconstruirlo con: python -m src.run_monthly --rebuild {snapshot}")
+    with open(path, "rb") as fh:
         ctx = pickle.load(fh)
     from src.run_monthly import load_archive
 
@@ -227,7 +234,8 @@ def aggregates_table(ctx: dict) -> str:
 PAGES_URL = "https://tobicardenas.github.io/demanda-dinero"
 
 
-def write_summary(run_month: str, ctx: dict, tabs: dict, al: pd.DataFrame, flags: list[str]) -> None:
+def write_summary(run_month: str, ctx: dict, tabs: dict, al: pd.DataFrame, flags: list[str],
+                  perf: pd.DataFrame | None = None) -> None:
     """reports/<AAAA-MM>_resumen.md: cuerpo del aviso mensual (issue de GitHub -> email)."""
     import re as _re
 
@@ -246,6 +254,16 @@ def write_summary(run_month: str, ctx: dict, tabs: dict, al: pd.DataFrame, flags
                  + ". Usar la caminata aleatoria como referencia.")
     else:
         L.append("Sin alarmas de inestabilidad del equilibrio.")
+    if perf is not None and len(perf):
+        emoji = {"verde": "🟢", "amarillo": "🟡", "rojo": "🔴", "sin datos suficientes": "⚪"}
+        L += ["", "Cómo viene funcionando el modelo (últimos 12 meses, contra «igual que hoy»):"]
+        for _, r in perf.iterrows():
+            ratio = "" if pd.isna(r["ratio"]) else f" (error relativo {r['ratio']:.2f})"
+            L.append(f"- {emoji[r['estado']]} {VAR_LABEL[r['variable']]}{ratio}")
+        if (perf["estado"] == "rojo").any():
+            L.append("")
+            L.append("🔴 El modelo principal viene errando más que la regla «igual que hoy»: conviene revisar la "
+                     "especificación.")
     clean = [_re.sub("<[^>]+>", "", f) for f in flags if not f.startswith("AVISO")]
     if clean:
         L += ["", "Notas:"] + [f"- {f}" for f in clean]
@@ -285,41 +303,65 @@ def build(snapshot: str) -> str:
              f"escenario ex ante REM. Saldos reales s.e. en miles de millones de $ de dic-2016.</p>",
              "<div class='card'>" + alarm_html + "<ul>" + "".join(f"<li>{f}</li>" for f in flags) + "</ul></div>"]
 
+    perf = S.performance(arch, ctx)
+    parts += ["<h2>¿Cómo viene funcionando el modelo?</h2>", S.performance_html(perf, ctx)]
+
     parts.append("<h2>1. Pronóstico a 6 meses</h2><p class='muted'>Cabecera: ensamble de la familia lineal (promedio "
                  "simple de los 3 mejores de los últimos 12 meses). La caminata aleatoria (RW) se publica siempre al "
                  "lado: en 2026 ningún modelo le ganó de forma sistemática (Fase 4). Bandas solo con shocks: son "
                  "angostas, la cobertura efectiva es menor que la nominal.</p>")
+    parts.append(S.explain("¿Cómo se leen estos gráficos?", S.FORECAST_BODY))
     tabs = {}
     for var in MAIN_VARS:
         if (cur["variable"] == var).any():
             img, tab = fan_chart(var, ctx, cur, months)
             tabs[var] = tab
-            parts += [f"<h3>{VAR_LABEL[var]}</h3>", img, _table(tab, 2)]
-    write_summary(run_month, ctx, tabs, al, flags)
+            parts += [f"<h3>{VAR_LABEL[var]}</h3>", img,
+                      f"<p class='criollo'><strong>En criollo:</strong> {S.forecast_criollo(var, tab)}</p>",
+                      _table(tab, 2)]
+    write_summary(run_month, ctx, tabs, al, flags, perf)
 
-    parts.append("<h2>2. Brecha al equilibrio y alarma</h2><p class='muted'>ec = y − y_lp del modelo lineal (F1 mínima). "
+    parts += ["<h2>2. Qué cambió desde el reporte anterior</h2>", S.comparison(ctx, current_model(ctx), arch)]
+
+    parts.append("<h2>3. Brecha al equilibrio y alarma</h2><p class='muted'>ec = y − y_lp del modelo lineal (F1 mínima). "
                  "Negativa: el modelo cree que la demanda está por debajo de su equilibrio y proyecta suba. La alarma "
                  "compara la revisión del equilibrio del mes anterior con la media de 2021–oct-25.</p>")
-    parts += [ec_chart(ctx, stab, months), _table(al.set_index("variable"), 3)]
+    parts += [S.explain("¿Cómo se lee la brecha?", S.GAP_BODY, S.gap_criollo(al)), ec_chart(ctx, stab, months),
+              _table(al.set_index("variable"), 3)]
 
     err_tables, err_img = error_section(arch, ctx)
-    parts += ["<h2>3. Errores acumulados de todos los pronósticos archivados</h2>",
+    parts += ["<h2>4. Errores acumulados de todos los pronósticos archivados</h2>",
               "<p class='muted'>RMSE relativo a la caminata aleatoria (< 1 = mejor), escenario REM, contra la última "
               "vintage. El archivo incluye el pseudo fuera de muestra de la Fase 4 y cada corrida en tiempo real.</p>",
-              err_img, err_tables]
+              S.explain("¿Cómo se leen los errores?", S.ERRORS_BODY), err_img, err_tables]
 
     bimg, btab = bcra_section(ctx)
-    parts += ["<h2>4. Último programa del BCRA</h2>", bimg, btab]
-    parts += ["<h2>5. Agregados alternativos (hipótesis 6)</h2>", aggregates_table(ctx)]
-    parts += ["<h2>6. Frescura de las fuentes</h2>", _table(ctx["freshness"].set_index("serie"), 0)]
+    parts += ["<h2>5. Último programa del BCRA</h2>", S.explain("¿Cómo se lee la comparación con el BCRA?", S.BCRA_BODY),
+              bimg, btab]
+    parts += ["<h2>6. Agregados alternativos (hipótesis 6)</h2>",
+              S.explain("¿Por qué miramos otros agregados?", S.AGG_BODY), aggregates_table(ctx)]
+    parts += ["<h2>7. Frescura de las fuentes</h2>", S.explain("¿Qué es esto?", S.FRESH_BODY),
+              _table(ctx["freshness"].set_index("serie"), 0)]
     parts.append("<p class='muted'>Generado por <code>python -m src.run_monthly</code>. Decisiones y protocolo en "
-                 "DECISIONS.md. Pronósticos archivados en data/forecasts/ (nunca se reescriben).</p></main></body></html>")
+                 "DECISIONS.md. Pronósticos archivados en data/forecasts/ (nunca se reescriben). Todos los reportes "
+                 "anteriores quedan en el índice del sitio.</p></main></body></html>")
+    html_text = "\n".join(parts)
     out = ROOT / "reports" / f"{run_month}.html"
-    out.write_text("\n".join(parts), encoding="utf-8")
+    out.write_text(html_text, encoding="utf-8")
+    # Copia fechada de cada corrida: el reporte del mes se pisa si hay dos corridas, esta copia no.
+    dated = ROOT / "reports" / "corridas" / f"{snapshot}.html"
+    dated.parent.mkdir(parents=True, exist_ok=True)
+    dated.write_text(html_text, encoding="utf-8")
     return str(out)
 
 
+def current_model(ctx: dict) -> pd.DataFrame:
+    p = ROOT / "data" / "runs" / ctx["snapshot"] / "modelo.csv"
+    return pd.read_csv(p) if p.exists() else pd.DataFrame()
+
+
 if __name__ == "__main__":
-    snap = sys.argv[1] if len(sys.argv) > 1 else sorted(
-        p.stem.removeprefix("monthly_context_") for p in (ROOT / "data" / "processed").glob("monthly_context_*.pkl"))[-1]
+    runs = ROOT / "data" / "runs"
+    snap = sys.argv[1] if len(sys.argv) > 1 else sorted(p.name for p in runs.iterdir()
+                                                         if (p / "contexto.pkl").exists())[-1]
     print(build(snap))

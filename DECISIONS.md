@@ -184,3 +184,23 @@ Los orígenes nov-25, abr-26 y jul-26 se reportan aparte y no deciden. Para el M
 - **X13 en Linux.** `X13_BINARY` sobrescribe la ruta de `settings.yaml`. El workflow instala el binario b62 de Census para Linux (`x13as_ascii`).
 - **Segunda corrida el mismo día:** falla con código 1 sin escribir nada. El reporte se puede regenerar desde el contexto guardado con `python -m src.report.build_report`.
 - **Umbral de la alarma del M2 privado.** Queda alto (21,8%) porque la media de revisiones de desarrollo incluye un vector de Johansen errático (revisión máxima de 165%). No se corrige: es la regla fijada antes de correr.
+
+## 2026-11-18 · Comparación entre corridas, explicaciones simples y semáforo de desempeño
+
+- **Cada corrida guarda `data/runs/<fecha>/`** (versionado en el repo):
+  - `contexto.pkl`: la entrada del reporte;
+  - `observado.csv`: las series s.e. tal como se vieron en esa corrida;
+  - `modelo.csv`: θ, brecha, equilibrio y elasticidades a1 y a2 de la F1 mínima.
+
+  Con esto el reporte compara contra la corrida anterior: qué esperaba para el mes que ya se observó, cuánto cambió el pronóstico, cuánto cambiaron los parámetros y cuánto se revisaron los datos pasados.
+- **Corridas del 2-nov y 18-nov reconstruidas** con `python -m src.run_monthly --rebuild <fecha>` desde sus snapshots. No se reescribió ningún archivo de `data/forecasts/`.
+  - La del 2-nov coincide exactamente con lo archivado.
+  - La del 18-nov, que corrió en Linux en GitHub Actions, coincide hasta 3e-5 en todos los modelos menos el ARIMA del M3 (4,6e-3): el optimizador elige distinto entre sistemas operativos. Los datos s.e. son idénticos.
+- **Copia fechada de cada reporte** en `reports/corridas/<fecha>.html`. El reporte del mes (`reports/AAAA-MM.html`) muestra la última corrida del mes; el sitio lista todas.
+- **Explicaciones en lenguaje simple** ("¿Cómo se lee?" y "En criollo") en cada sección, en `src/report/sections.py`. Son textos fijos más frases armadas con los números del mes; no hay interpretación generada por IA.
+- **Semáforo de desempeño (regla fijada hoy).** RMSE del modelo principal (ensamble F1, o la F1 mínima si no hay ensamble) dividido por el RMSE de la caminata aleatoria. Se calcula con los últimos 12 meses objetivo, h = 1–3, escenario REM, todo el archivo.
+  - Verde si es menor a 0,95; rojo si es mayor a 1,10; amarillo en el medio (`settings.yaml: monthly.perf_*`).
+  - En la primera aplicación (18-nov) da rojo para M2 transaccional (1,18) y circulante (1,33), y amarillo para DAV (1,05). Es coherente con el test de la Fase 4.
+- **Qué se actualiza solo y qué no.**
+  - Cada mes se reestiman todos los parámetros con todos los datos disponibles: coeficientes, rezagos, X13, equilibrio, y los pesos y la selección de los ensambles, que eligen los 3 modelos que mejor anduvieron en los últimos 12 meses.
+  - **El menú de modelos y la especificación no cambian solos.** Cambiarlos automáticamente según el desempeño reciente sería sobreajustar a pocos meses. El semáforo en rojo es la señal para una revisión manual, que se documenta acá antes de aplicarse.

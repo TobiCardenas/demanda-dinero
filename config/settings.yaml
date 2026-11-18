@@ -91,4 +91,9 @@ monthly:
   run_day: 18                    # día de la corrida (cron), unos días después de la publicación del IPC
   alarm_revision_multiple: 2.0   # alarma si |revisión del equilibrio| > 2 x media de desarrollo de la Fase 4
   history_months: 36             # meses de historia en los gráficos del reporte
+  # Semáforo de desempeño (fijado nov-2026): RMSE del modelo principal / RMSE de "igual que hoy",
+  # últimos perf_window_months meses objetivo, h = 1..3, escenario REM, todo el archivo.
+  perf_window_months: 12
+  perf_green_below: 0.95
+  perf_red_above: 1.10
 

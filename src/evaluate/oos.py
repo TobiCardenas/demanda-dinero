@@ -108,8 +108,10 @@ def run_origin(origin_str: str, seed: int, grid: dict, opts: dict | None = None,
                 m = factory().fit(od.data, origin)
                 if name == "F1|minimal|long":
                     ylp = pd.Series(m.long_run(m.d, m.params.lr), index=m.d.index)
+                    st = m.structural()
                     stab.append({"origin": origin, "variable": var, "theta": m.params.theta,
-                                 "y_lp_origin": ylp.iloc[-1], "y_lp_prev": ylp.iloc[-2], "ec": m.ec_path().iloc[-1]})
+                                 "y_lp_origin": ylp.iloc[-1], "y_lp_prev": ylp.iloc[-2], "ec": m.ec_path().iloc[-1],
+                                 "a1_co": st.get("a1_co"), "a2_act": st.get("a2_act"), "p": m.p})
                     if context is not None:
                         context["ec"][var], context["ylp"][var] = m.ec_path(), ylp
                 for sname, sc in scen.items():

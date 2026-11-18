@@ -25,6 +25,11 @@ def build(out: Path) -> Path:
                      reverse=True)
     for p in reports:
         shutil.copy2(p, out / p.name)
+    runs = sorted((ROOT / "reports" / "corridas").glob("*.html"), reverse=True)
+    (out / "corridas").mkdir()
+    for p in runs:
+        shutil.copy2(p, out / "corridas" / p.name)
+    run_items = "".join(f"<li><a href='corridas/{p.name}'>{p.stem}</a></li>" for p in runs)
     items = "".join(f"<li><a href='{p.name}'>{MONTHS[int(p.stem[5:]) - 1].capitalize()} {p.stem[:4]}</a>"
                     + (" <span class='muted'>(último)</span>" if i == 0 else "") + "</li>"
                     for i, p in enumerate(reports))
@@ -38,6 +43,9 @@ def build(out: Path) -> Path:
         "<p class='muted'>Pronóstico a 6 meses del M2 transaccional privado y sus componentes, brecha al equilibrio, "
         "errores acumulados y comparación con el último programa del BCRA. Se actualiza el día 18 de cada mes.</p>"
         f"{latest}<h2>Todos los reportes</h2><ul>{items}</ul>"
+        "<h2>Todas las corridas</h2><p class='muted'>Si en un mes hubo más de una corrida, el reporte del mes muestra "
+        "la última; acá quedan todas, por fecha.</p>"
+        f"<ul>{run_items}</ul>"
         "<p class='muted'>Metodología y decisiones: "
         "<a href='https://github.com/TobiCardenas/demanda-dinero/blob/main/DECISIONS.md'>DECISIONS.md</a>.</p>"
         "</main></body></html>", encoding="utf-8")
