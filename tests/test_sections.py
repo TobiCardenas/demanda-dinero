@@ -42,3 +42,12 @@ def test_comparison_without_previous_run(tmp_path, monkeypatch):
     html = S.comparison({"snapshot": "2026-11-18", "origin": pd.Period("2026-10", "M"), "od_data": pd.DataFrame()},
                         pd.DataFrame(), pd.DataFrame())
     assert "primera corrida" in html
+
+
+def test_headline_choice_rule():
+    from src.evaluate.headline import choose
+    s = pd.DataFrame({"criterio (prom. variables y h)": [1.03, 1.00, 0.984], "peor variable": [1.3, 1.0, 1.14]},
+                     index=["R0", "R1", "R4"])
+    assert choose(s) == "R1"  # R1 empata (dentro de 0,02 del mínimo) y tiene menor peor caso
+    s.loc["R4", "criterio (prom. variables y h)"] = 0.90
+    assert choose(s) == "R4"  # ganador claro

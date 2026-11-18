@@ -96,4 +96,6 @@ monthly:
   perf_window_months: 12
   perf_green_below: 0.95
   perf_red_above: 1.10
+  # Titular del reporte (revisión del 18-nov-2026, reports/revision_titular/): RW = "igual que hoy".
+  headline: RW
 

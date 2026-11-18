@@ -126,14 +126,18 @@ def performance_html(perf: pd.DataFrame, ctx: dict) -> str:
         items.append(f"<li><span style='color:{color[r['estado']]};font-weight:700'>●</span> "
                      f"<strong>{SHORT[r['variable']].capitalize()}</strong>: {label[r['estado']]}{ratio}</li>")
     reds = perf[perf["estado"] == "rojo"]
+    greens = perf[perf["estado"] == "verde"]
     if len(reds):
-        verdict = ("<p class='warn'>El modelo principal viene errando más que la regla más simple en: "
+        verdict = ("<p class='warn'>El modelo con equilibrio sigue errando más que «igual que hoy» en: "
                    + ", ".join(SHORT[v] for v in reds["variable"])
-                   + ". Los parámetros se reestiman solos cada mes, pero eso no alcanza: conviene revisar la "
-                     "especificación (ver DECISIONS.md, regla de desempeño).</p>")
+                   + ". Por eso el pronóstico titular es «igual que hoy» (revisión del 18-nov-2026).</p>")
+    elif len(greens) == len(perf):
+        verdict = ("<p class='ok'>El modelo con equilibrio volvió a ganarle a «igual que hoy» en todas las variables. "
+                   "Si se sostiene, corresponde una revisión manual para ver si vuelve a ser titular.</p>")
     else:
-        verdict = "<p class='ok'>Ninguna variable en rojo: no hace falta revisar la especificación este mes.</p>"
-    body = ("Cada mes guardamos lo que el modelo pronosticó. Cuando llegan los datos de verdad, medimos cuánto se "
+        verdict = ("<p class='muted'>Sin rojos, pero tampoco todo verde: el titular sigue siendo «igual que hoy».</p>")
+    body = ("Este semáforo mide al modelo con equilibrio (el ensamble de la familia lineal), que es el candidato a "
+            "volver a ser titular. Cada mes guardamos lo que pronosticó. Cuando llegan los datos de verdad, medimos cuánto se "
             "equivocó y lo comparamos con la regla más tonta posible: decir que el mes que viene va a ser igual que "
             f"hoy. Se usan los últimos {cfg['perf_window_months']} meses y pronósticos a 1, 2 y 3 meses. Un error "
             "relativo menor a 1 quiere decir que el modelo erra menos que esa regla (sirve); mayor a 1, que erra más. "
@@ -159,14 +163,16 @@ def comparison(ctx: dict, model_now: pd.DataFrame, arch: pd.DataFrame) -> str:
         if gp.empty or gc.empty:
             continue
         hp, hc = gp[gp["model"] == _head(gp)], gc[gc["model"] == _head(gc)]
-        t = pd.DataFrame({"anterior": hp.set_index("target")["q0.5"], "actual": hc.set_index("target")["q0.5"]})
+        t = pd.DataFrame({"anterior": hp.set_index("target")["q0.5"], "actual": hc.set_index("target")["q0.5"],
+                          "rw_anterior": gp[gp["model"] == "RW"].set_index("target")["point"]})
         obs = latest[f"y_{var}"]
         t["observado"] = [obs.get(m, np.nan) if m <= ctx["origin"] else np.nan for m in t.index]
         lvl = np.exp(t) / 1000
         tab = pd.DataFrame({"pronóstico anterior": lvl["anterior"], "pronóstico actual": lvl["actual"],
                             "cambio del pronóstico (%)": 100 * (np.exp(t["actual"] - t["anterior"]) - 1),
                             "observado": lvl["observado"],
-                            "error del anterior (%)": 100 * (np.exp(t["anterior"] - t["observado"]) - 1)})
+                            "error del anterior (%)": 100 * (np.exp(t["anterior"] - t["observado"]) - 1),
+                            "error de «igual que hoy» (%)": 100 * (np.exp(t["rw_anterior"] - t["observado"]) - 1)})
         tab.index = [str(i) for i in tab.index]
         tables.append(f"<h3>{SHORT[var].capitalize()}</h3>" + tab.round(2).to_html(border=0, na_rep="–"))
         seen = tab.dropna(subset=["observado"])
@@ -175,8 +181,12 @@ def comparison(ctx: dict, model_now: pd.DataFrame, arch: pd.DataFrame) -> str:
             e = r["error del anterior (%)"]
             sentido = ("acertó casi justo" if abs(e) < 0.3 else
                        f"esperaba {num(abs(e))}% {'más' if e > 0 else 'menos'} de lo que hubo")
-            lines.append(f"para {name(var)} de {mes(m)} el reporte anterior esperaba {num(r['pronóstico anterior'])} y "
-                         f"salió {num(r['observado'])}: {sentido}")
+            erw = r["error de «igual que hoy» (%)"]
+            quien = ("el modelo erró menos que «igual que hoy»" if abs(e) < abs(erw) else
+                     "«igual que hoy» erró menos que el modelo")
+            lines.append(f"para {name(var)} de {mes(m)} el modelo con equilibrio esperaba "
+                         f"{num(r['pronóstico anterior'])} y salió {num(r['observado'])}: {sentido}; «igual que hoy» "
+                         f"se equivocó en {pct(erw)}, así que {quien}")
         common = tab.dropna(subset=["pronóstico anterior", "pronóstico actual"])
         if len(common):
             last = common.iloc[-1]
@@ -184,11 +194,11 @@ def comparison(ctx: dict, model_now: pd.DataFrame, arch: pd.DataFrame) -> str:
             lines.append(f"para {mes(common.index[-1])} ahora se espera {num(abs(c))}% "
                          f"{'más' if c > 0 else 'menos'} que en el reporte anterior")
     criollo = (". ".join(l[0].upper() + l[1:] for l in lines) + ".") if lines else None
-    body = ("Acá ponemos lado a lado lo que decía el reporte anterior y lo que dice este. Sirve para dos cosas: "
-            "ver si el pronóstico del mes que ya pasó acertó (columna «error del anterior») y ver cuánto cambió "
-            "la idea del modelo con la información nueva (columna «cambio del pronóstico»). Si el pronóstico "
-            "salta mucho de un mes al otro sin que haya pasado nada raro, es una señal de que el modelo es "
-            "inestable.")
+    body = ("Acá ponemos lado a lado lo que decía el modelo con equilibrio en el reporte anterior y lo que dice "
+            "ahora. Sirve para tres cosas: ver si el pronóstico del mes que ya pasó acertó (columna «error del "
+            "anterior»), compararlo con lo que habría errado «igual que hoy» (la columna de al lado) y ver cuánto "
+            "cambió la idea del modelo con la información nueva («cambio del pronóstico»). Si el pronóstico salta "
+            "mucho de un mes al otro sin que haya pasado nada raro, es una señal de que el modelo es inestable.")
     out.append(explain("¿Cómo se lee esta comparación?", body, criollo))
     out.append(compare_chart(ctx, pctx, cur, prev))
     out += tables
@@ -261,26 +271,41 @@ def compare_chart(ctx: dict, pctx: dict, cur: pd.DataFrame, prev: pd.DataFrame) 
 
 # --- 3. Textos en criollo para las secciones existentes --------------------------------------
 
-def forecast_criollo(var: str, tab: pd.DataFrame) -> str:
+def _verbo(var: str, ch: float) -> str:
+    return (plural(var, "se mantenga casi igual", "se mantengan casi iguales") if abs(ch) < 0.5 else
+            plural(var, "suba", "suban") if ch > 0 else plural(var, "baje", "bajen"))
+
+
+def forecast_criollo(var: str, tab: pd.DataFrame, headline: str = "RW") -> str:
     last = tab.iloc[-1]
-    ch = last["var. vs origen (%)"]
-    lo, hi = 100 * (last["68% inf."] / last["RW"] - 1), 100 * (last["68% sup."] / last["RW"] - 1)
-    verbo = (plural(var, "se mantenga casi igual", "se mantengan casi iguales") if abs(ch) < 0.5 else
-             plural(var, "suba", "suban") if ch > 0 else plural(var, "baje", "bajen"))
-    s = (f"el modelo espera que {name(var)} {verbo} ({pct(ch)}) de acá a {mes(tab.index[-1])}, en pesos de poder de "
-         f"compra constante. El rango probable va de {pct(lo)} a {pct(hi)}")
+    ch = 100 * (last["titular (mediana)"] / last["hoy"] - 1)
+    lo, hi = 100 * (last["68% inf."] / last["hoy"] - 1), 100 * (last["68% sup."] / last["hoy"] - 1)
+    if headline == "RW":
+        s = (f"la mejor apuesta hoy es que {name(var)} {plural(var, 'se quede', 'se queden')} donde "
+             f"{plural(var, 'está', 'están')} ({num(last['hoy'])} miles de millones de pesos de 2016), porque en el "
+             f"último año ningún modelo le ganó a «igual que hoy». El rango probable a {mes(tab.index[-1])} va de "
+             f"{pct(lo)} a {pct(hi)}")
+    else:
+        s = (f"el titular espera que {name(var)} {_verbo(var, ch)} ({pct(ch)}) de acá a {mes(tab.index[-1])}, en pesos "
+             f"de poder de compra constante. El rango probable va de {pct(lo)} a {pct(hi)}")
     if lo < 0 < hi:
         s += ", o sea que no se puede descartar ni una suba ni una baja"
-    return s + "."
+    s += "."
+    if "modelo: var. vs hoy (%)" in tab and headline != HEAD:
+        mch = last["modelo: var. vs hoy (%)"]
+        s += (f" El modelo con equilibrio, en cambio, espera que {_verbo(var, mch)} ({pct(mch)}): tomalo como una "
+              "señal de hacia dónde empujan la actividad y las tasas, no como pronóstico.")
+    return s
 
 
 FORECAST_BODY = ("La línea negra es lo que efectivamente pasó (cuánta plata tiene la gente, sin el efecto de la "
-                 "inflación ni de los meses estacionales como diciembre o julio). La línea azul es lo que el modelo "
-                 "espera para los próximos 6 meses, y la zona celeste es el rango probable: la más oscura cubre en "
-                 "teoría 2 de cada 3 casos y la más clara 19 de cada 20, aunque en la práctica estas bandas son "
-                 "demasiado angostas y la realidad se sale más seguido. La línea gris punteada es la regla «igual que "
-                 "hoy». Si la azul queda arriba de la gris, el modelo espera que la gente quiera tener más pesos; si "
-                 "queda abajo, menos. La franja naranja marca los meses en que la actividad todavía no se publicó y "
+                 "inflación ni de los meses estacionales como diciembre o julio). La línea azul es el pronóstico "
+                 "titular y la zona celeste su rango probable: la más oscura cubre 2 de cada 3 casos y la más clara "
+                 "19 de cada 20. Hoy el titular es «igual que hoy»: la línea azul queda plana porque, en el último año, "
+                 "ningún modelo logró adivinar mejor que eso hacia dónde iba la demanda de dinero. La línea naranja "
+                 "punteada es lo que diría el modelo con equilibrio: si está arriba de la azul, la actividad y las "
+                 "tasas empujan para que la gente quiera más pesos; si está abajo, menos. Tomala como señal, no como "
+                 "pronóstico. La franja naranja de fondo marca los meses en que la actividad todavía no se publicó y "
                  "la completamos con lo que esperan los analistas (REM).")
 
 GAP_BODY = ("El modelo calcula cuánta plata «debería» querer tener la gente según cuánto se produce y cuánto pagan las "

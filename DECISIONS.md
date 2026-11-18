@@ -204,3 +204,31 @@ Los orígenes nov-25, abr-26 y jul-26 se reportan aparte y no deciden. Para el M
 - **Qué se actualiza solo y qué no.**
   - Cada mes se reestiman todos los parámetros con todos los datos disponibles: coeficientes, rezagos, X13, equilibrio, y los pesos y la selección de los ensambles, que eligen los 3 modelos que mejor anduvieron en los últimos 12 meses.
   - **El menú de modelos y la especificación no cambian solos.** Cambiarlos automáticamente según el desempeño reciente sería sobreajustar a pocos meses. El semáforo en rojo es la señal para una revisión manual, que se documenta acá antes de aplicarse.
+
+## 2026-11-18 · Revisión del modelo titular (disparada por el semáforo en rojo)
+
+**Contexto y advertencia.** La revisión la dispara el semáforo en rojo del 18-nov, o sea los resultados de 2026, que ya se vieron en las fases 3 y 4. Para no elegir mirando 2026, la elección se hace solo con la muestra de desarrollo (objetivo ≤ oct-25), con candidatos y regla fijados **antes** de calcular nada de esta revisión. El resultado de 2026 se reporta después y no decide.
+
+**Candidatos a titular** (en cada origen solo se usa información disponible en ese origen):
+- **R0:** ensamble F1, promedio simple (titular actual).
+- **R1:** caminata aleatoria ("igual que hoy").
+- **R2, semáforo en tiempo real:** en cada origen se calcula el RMSE del ensamble F1 / RMSE de la caminata aleatoria con los pronósticos de objetivo en los 12 meses previos, h = 1–3, evaluados contra la vintage del origen. Si supera 1,10 el titular es la caminata aleatoria; si no, el ensamble F1. Con menos de 6 pares de errores se usa el ensamble F1.
+- **R3:** ensamble de todos los modelos, promedio simple (ya archivado).
+- **R4:** promedio 50/50 del ensamble F1 y la caminata aleatoria.
+- **R5:** combinación ensamble F1 / caminata aleatoria con pesos inversos al ECM de los 12 meses previos (misma ventana y vintage que R2).
+
+**Criterio.** Escenario REM, en la muestra de desarrollo y en las filas donde existen todos los candidatos. Se calcula el RMSE relativo a la caminata aleatoria, se promedia sobre h = 1..6 y después sobre M2 transaccional, circulante y DAV, con igual peso.
+
+**Regla de elección.**
+- Gana el criterio más bajo.
+- Si varios quedan a menos de 0,02 del mínimo, gana el de menor peor caso: el máximo entre variables del RMSE relativo promedio en h, también en desarrollo.
+- Si el ganador no es R0, reemplaza al titular.
+
+**Resultado** (`reports/revision_titular/revision.md`, `python -m src.evaluate.headline`):
+- **Desarrollo:** R4 (50/50) 0,984 · R1 (caminata aleatoria) 1,000 · R0 (ensamble F1) 1,028 · R2 1,047 · R5 1,051 · R3 1,256.
+- **Elección:** R1 queda a menos de 0,02 del mínimo y tiene el menor peor caso (1,00 contra 1,14 de R4), así que **la regla elige R1: el titular pasa a ser "igual que hoy"** (`settings.yaml: monthly.headline: RW`).
+- **Test 2026** (no decide): R1 1,00 · R4 1,09 · R5 1,11 · R2 1,18 · R0 1,23 · R3 1,27.
+- **Fragilidad declarada.** El criterio pesa igual las tres variables, y en desarrollo M2 y DAV tienen entre 6 y 1 observaciones por horizonte. El circulante, con unas 50, favorecía a R0 (0,64), pero en 2026 se dio vuelta (1,43). No se eligió por variable: sería sobreajustar a estos números.
+- **R2, el semáforo aplicado en tiempo real, no ayuda.** En el circulante cambia tarde (feb-26), cuando el error ya está hecho.
+- **Cómo queda el reporte.** El modelo con equilibrio sigue en el reporte como señal secundaria (línea punteada), y el semáforo lo sigue midiendo. Volver a hacerlo titular requiere una revisión manual con el mismo protocolo, cuando el semáforo esté en verde para las tres variables.
+- **Republicación.** El reporte del 18-nov (`reports/corridas/2026-11-18.html`) se republicó ese mismo día con el titular nuevo. El del 2-nov no se modificó. Desde ahora, las copias fechadas no se reescriben salvo con `--overwrite-dated`.
