@@ -1,0 +1,209 @@
+{
+  "bcra_catalog.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias?limit=3000",
+    "sha256": "4dc44b1ecf79ae50332a19cc74456e358c9c985ca42c55ffdeb9d55d1f980592",
+    "bytes": 560205,
+    "downloaded_at": "2026-11-18T19:52:30"
+  },
+  "bcra_circ_public_67.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/67",
+    "sha256": "3b8e854c537189f43670ff038f1df4984fd3c2fe90cd88ce1a9c2b941dfc5158",
+    "bytes": 119225,
+    "downloaded_at": "2026-11-18T19:52:30",
+    "catalog_desc": "Billetes y monedas en poder del público",
+    "n": 2642
+  },
+  "bcra_circ_public_pv_17.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/17",
+    "sha256": "dc45a03d3266c54c0f583666265d42af8ee827398ece9c19e015f80124a78138",
+    "bytes": 118561,
+    "downloaded_at": "2026-11-18T19:52:31",
+    "catalog_desc": "Billetes y monedas en poder del público",
+    "n": 2643
+  },
+  "bcra_cheques_canc_69.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/69",
+    "sha256": "8c1f64aee485528b878cbbddcf38dc36580721d526953c6daf4a0382e37bca84",
+    "bytes": 103797,
+    "downloaded_at": "2026-11-18T19:52:31",
+    "catalog_desc": "Cheques cancelatorios",
+    "n": 2642
+  },
+  "bcra_m2_trans_priv_197.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/197",
+    "sha256": "0cc0a741affa2a49698817d27d49639072aa828dbf720e55dcbc95164863f9a2",
+    "bytes": 67673,
+    "downloaded_at": "2026-11-18T19:52:32",
+    "catalog_desc": "M2 transaccional del sector privado",
+    "n": 1424
+  },
+  "bcra_cc_priv_94.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/94",
+    "sha256": "a370fbf308352bdfc3c3755bc74fee475f7d4dcce644175dcc3378a8ec61a19e",
+    "bytes": 118507,
+    "downloaded_at": "2026-11-18T19:52:32",
+    "catalog_desc": "Cuentas corrientes del sector privado no financiero",
+    "n": 2642
+  },
+  "bcra_ca_priv_95.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/95",
+    "sha256": "f6e96bf25cb4eaae7dc78e411e4c78107f01a9f10043a9247cec3bfd6c0c7254",
+    "bytes": 118584,
+    "downloaded_at": "2026-11-18T19:52:33",
+    "catalog_desc": "Cajas de ahorro del sector privado no financiero",
+    "n": 2642
+  },
+  "bcra_pf_priv_96.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/96",
+    "sha256": "6b74cf99d756a889b23c5fd32c301030c7c77852271acb7f920adeeac4689ccb",
+    "bytes": 123099,
+    "downloaded_at": "2026-11-18T19:52:33",
+    "catalog_desc": "Depósitos a plazo no ajustables por CER/UVAS del sector privado no financiero",
+    "n": 2642
+  },
+  "bcra_pf_uva_priv_97.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/97",
+    "sha256": "154c7e32837ec271da8ad803c8ce811e0afa7b7fe519c7d2c4c0a984b2a1e413",
+    "bytes": 118299,
+    "downloaded_at": "2026-11-18T19:52:34",
+    "catalog_desc": "Depósitos a plazo ajustables por CER/UVAS del sector privado no financiero",
+    "n": 2642
+  },
+  "bcra_other_dep_priv_98.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/98",
+    "sha256": "7684951385a94f63cdd5fee9eb16523d8d142488805d24cf224f7d4e8efec1c6",
+    "bytes": 115624,
+    "downloaded_at": "2026-11-18T19:52:35",
+    "catalog_desc": "Otros depósitos del sector privado no financiero",
+    "n": 2642
+  },
+  "bcra_dep_priv_total_106_106.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/106",
+    "sha256": "a24b809278e655ca588d92f6d2e0394fe97e6fc0c4d75ffe69fedf8d8b31949f",
+    "bytes": 126192,
+    "downloaded_at": "2026-11-18T19:52:36",
+    "catalog_desc": "Depósitos del sector privado no financiero",
+    "n": 2642
+  },
+  "bcra_dep_priv_usd_104_104.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/104",
+    "sha256": "c89a6c7e7491cdcaa3d5c6c07bee0340804736bf0fe04c533869aa76cb224028",
+    "bytes": 124589,
+    "downloaded_at": "2026-11-18T19:52:37",
+    "catalog_desc": "Depósitos del sector privado no financiero",
+    "n": 2642
+  },
+  "bcra_rate_pf30_12.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/12",
+    "sha256": "9f94331341f8e4d35e865118731d01385abd133e1049c73f6505765faabc62e0",
+    "bytes": 108295,
+    "downloaded_at": "2026-11-18T19:52:37",
+    "catalog_desc": "Tasa de interés de depósitos a 30 días de plazo en entidades financieras",
+    "n": 2644
+  },
+  "bcra_rate_badlar_7.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/7",
+    "sha256": "bb205e7ec81ddf3783ff7143287e7e048fe113905dcd570ea19c4c3b2b6bf40e",
+    "bytes": 111415,
+    "downloaded_at": "2026-11-18T19:52:38",
+    "catalog_desc": "Tasa de interés BADLAR de bancos privados",
+    "n": 2644
+  },
+  "bcra_rate_tamar_44.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/44",
+    "sha256": "bbac36372c5e11ef8b34152908e2b890747b1c17099b954973b90d7135bc2b1f",
+    "bytes": 21565,
+    "downloaded_at": "2026-11-18T19:52:38",
+    "catalog_desc": "Tasa de interes TAMAR de bancos privados",
+    "n": 511
+  },
+  "bcra_fx_a3500_5.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/5",
+    "sha256": "32992a78fcfdcfe38a9a520db13cbae41df32b5f503ba38400dd390ba3842742",
+    "bytes": 113918,
+    "downloaded_at": "2026-11-18T19:52:38",
+    "catalog_desc": "Tipo de cambio mayorista de referencia",
+    "n": 2645
+  },
+  "bcra_infl_bcra_27.json": {
+    "source": "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/27",
+    "sha256": "daa92a1696c9825801a0ef12a368297b2a8f9d2b93120fdcdc6ecf8287c8b06b",
+    "bytes": 5108,
+    "downloaded_at": "2026-11-18T19:52:39",
+    "catalog_desc": "Inflación mensual.",
+    "n": 130
+  },
+  "indec_ipc_divisiones.csv": {
+    "source": "https://www.indec.gob.ar/ftp/cuadros/economia/serie_ipc_divisiones.csv",
+    "sha256": "0776b25299b68f70496b6d717fd567becb26c4d2c018df1a82620cdd62546e9d",
+    "bytes": 1252806,
+    "downloaded_at": "2026-11-18T19:52:41"
+  },
+  "indec_emae.xls": {
+    "source": "https://www.indec.gob.ar/ftp/cuadros/economia/sh_emae_mensual_base2004.xls",
+    "sha256": "b5efa8d63ab83a6db1b0ad9dc2198ada30669f8443e851803d4767131329ad38",
+    "bytes": 72192,
+    "downloaded_at": "2026-11-18T19:52:42"
+  },
+  "datosgob_ipc_core.json": {
+    "source": "https://apis.datos.gob.ar/series/api/series/?ids=148.3_INUCLEONAL_DICI_M_19",
+    "sha256": "de2c0a35dfa0f87ec36ecad01a4f47aa9c4ae6d4150018e09b9c8d9479c44ac6",
+    "bytes": 6583,
+    "downloaded_at": "2026-11-18T19:52:43"
+  },
+  "datosgob_ipc_headline_dg.json": {
+    "source": "https://apis.datos.gob.ar/series/api/series/?ids=148.3_INIVELNAL_DICI_M_26",
+    "sha256": "dbab05a6206eb54aa88f7bca6f1decb517b85655c45da40d11a0112f3ad362e1",
+    "bytes": 6589,
+    "downloaded_at": "2026-11-18T19:52:45"
+  },
+  "datosgob_emae_orig_dg.json": {
+    "source": "https://apis.datos.gob.ar/series/api/series/?ids=143.3_NO_PR_2004_A_21",
+    "sha256": "a859af7efc0ea6eaa7e70155fa5dcfea6f0e2710d98529bab192f70331def3ef",
+    "bytes": 13027,
+    "downloaded_at": "2026-11-18T19:52:45"
+  },
+  "datosgob_emae_sa_dg.json": {
+    "source": "https://apis.datos.gob.ar/series/api/series/?ids=143.3_NO_PR_2004_A_31",
+    "sha256": "46561fa7947f12e454be7fdd6b079abdda66683ee2912e32c59451198a8125e7",
+    "bytes": 13067,
+    "downloaded_at": "2026-11-18T19:52:46"
+  },
+  "datosgob_gdp_nominal_q.json": {
+    "source": "https://apis.datos.gob.ar/series/api/series/?ids=9.2_PPC_2004_T_22",
+    "sha256": "3303ed0c8557a4788c13f1042fcea16d0a46e3b36b1ae5b1d9cae25d5b659923",
+    "bytes": 6788,
+    "downloaded_at": "2026-11-18T19:52:47"
+  },
+  "datosgob_gdp_real_q.json": {
+    "source": "https://apis.datos.gob.ar/series/api/series/?ids=4.2_OGP_2004_T_17",
+    "sha256": "390af0a8436e1a973482797c25882f70b59b8d97c884f38c6585568e55c35d16",
+    "bytes": 6645,
+    "downloaded_at": "2026-11-18T19:52:48"
+  },
+  "datosgob_gdp_real_sa_q.json": {
+    "source": "https://apis.datos.gob.ar/series/api/series/?ids=3.2_OGP_D_2004_T_17",
+    "sha256": "f3234d64d4494cdb9eba5291b56521278fe86e785bd28abf7c4d2e78d9adcd8d",
+    "bytes": 6772,
+    "downloaded_at": "2026-11-18T19:52:49"
+  },
+  "datosgob_gdp_deflator_q.json": {
+    "source": "https://apis.datos.gob.ar/series/api/series/?ids=23.2_PIBPM_2004_T_38",
+    "sha256": "4be78f23049d86e7e8c129691e7eeed228a712ceb7363eda295237d8a5028810",
+    "bytes": 6802,
+    "downloaded_at": "2026-11-18T19:52:50"
+  },
+  "bcra_pagos_minoristas.xlsx": {
+    "source": "https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/Informes/series-informe-mensual-pagos-minoristas-2026-09.xlsx",
+    "sha256": "8dbe970b5630821f9eb45afc77a5a5699d106174a30c28aac5427ab6654e64ae",
+    "bytes": 172372,
+    "downloaded_at": "2026-11-18T19:52:56",
+    "edition": "2026-09"
+  },
+  "bcra_rem_historico.xlsx": {
+    "source": "https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/relevamiento-expectativas-mercado-historico.xlsx",
+    "sha256": "4e759899dec322f3cc01bd2db3cc89a248c7c5e201a88bde860a7453cf18df9b",
+    "bytes": 1654946,
+    "downloaded_at": "2026-11-18T19:52:57"
+  }
+}
